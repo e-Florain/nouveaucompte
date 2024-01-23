@@ -2,7 +2,7 @@
 
 /vendor/*
 /config/app.php
-
+/config/app_local.php
 /tmp/cache/models/*
 !/tmp/cache/models/empty
 /tmp/cache/persistent/*
@@ -13,7 +13,7 @@
 !/tmp/sessions/empty
 /tmp/tests/*
 !/tmp/tests/empty
-
+/tmp/debug_kit.sqlite
 /logs/*
 !/logs/empty
 

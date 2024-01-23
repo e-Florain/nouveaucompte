@@ -1,0 +1,98 @@
+/* Custom page CSS
+-------------------------------------------------- */
+/* Not required for template or sticky footer method. */
+
+@font-face {
+    font-family: 'FreeStyleScript';
+    font-style: normal;
+    font-weight: normal;
+    src: local('FreeStyleScript'), url('../font/FREESCPT.woff') format('woff');
+}
+
+@font-face {
+    font-family: 'Steelfish';
+    font-style: normal;
+    font-weight: normal;
+    src: local('Steelfish'), url('/font/Steelfish-Regular.woff') format('woff');
+}
+
+@font-face {
+    font-family: 'FuturaLight';
+    font-style: normal;
+    font-weight: normal;
+    src: local('FuturaLight'), url('/font/Futura-Light.woff') format('woff');
+}
+
+
+main > .container {
+    width: 80%;
+    padding: 60px 15px 60px;
+    font-family: FuturaLight;
+}
+
+a.brand-logo {
+    color: #70706f;
+    font-family: FreeStyleScript;
+    font-size: 3.1rem;
+}
+
+.spinner-border {
+    color: #70706f;
+}
+
+.navbar {
+    background-color: #d7da23;
+    padding-left: 100px;
+    font-family: FuturaLight;
+}
+
+nav ul a {
+    color: #70706f;
+}
+
+.footer {
+    background-color: #d7da23;
+    font-family: FuturaLight;
+}
+
+footer a {
+    color: black;
+    text-decoration: none; 
+}
+
+header a {
+    text-decoration: none; 
+}
+
+button a {
+    color: white;
+    text-decoration: none; 
+}
+
+.cake-debug {
+    z-index: 10000;
+}
+
+#divmontantmensuel {
+    display: none;
+}
+
+#divmontantannuel {
+    display: none;
+}
+
+#divmontant {
+    display: none;
+}
+
+.adhmensuel {
+    opacity: 0.2;
+}
+
+.adhannuel {
+    opacity: 0.2;
+}
+
+.float-center {
+    float: center;
+}

@@ -1,0 +1,9 @@
+main > .container {
+    width: 80%;
+    padding: 80px 15px 60px;
+    font-family: FuturaLight;
+}
+
+.nav-item {
+    padding: 0px 10px;
+}
