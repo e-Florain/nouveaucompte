@@ -39,6 +39,20 @@ class FlorapiTable extends Table
         }
     }
 
+    public function getAllAdh()
+    {
+        $http = new Client();
+        $url = $this->florapi['url'].'/getAdhs';
+        $response = $http->get($url, [], [
+            'headers' => [
+                'x-api-key' => $this->florapi['key'],
+                'Content-Type' => 'application/json'
+                ]
+        ]);
+        $infos = $response->getJson();
+        return $infos;
+    }
+
     public function getAdh($email)
     {
         $http = new Client();
