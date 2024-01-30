@@ -39,18 +39,16 @@
         </div>
     </div>
     <?php
+    
     if ($nvocompte->todo == "update") {
         if ($nvocompte->membership_state == "paid") {
             if ($nvocompte->membership_stop != NULL) {
-                $membershipstop = new DateTime($nvocompte->membership_stop);
-                $newdateadh = new DateTime($nvocompte->membership_stop);
-                $newdateadh->modify('+1 day');
                 ?>
                 <div class="row">
                     <div class="col s10 m6 offset-m2">
                         <h6>Vous êtes adhérent.e jusqu'au
-                            <?php echo $membershipstop->format("d-m-Y"); ?>, votre nouvelle adhésion commencera donc le
-                            <?php echo $newdateadh->format("d-m-Y"); ?>.
+                            <?php echo $membershipstop; ?>, votre nouvelle adhésion commencera donc le
+                            <?php echo $newdateadh; ?>.
                         </h6>
                     </div>
                 </div>

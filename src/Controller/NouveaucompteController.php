@@ -558,6 +558,13 @@ class NouveaucompteController extends AppController
         } else {
             $titre = "(SANS COMPTE NUMERIQUE)";
         }
+
+        if ($nvocompte->membership_stop != NULL) {
+            $membershipstop = new DateTime($nvocompte->membership_stop);
+            $newdateadh = $membershipstop->modify('+1 day');
+            $this->set('membershipstop', $membershipstop->format("d-m-Y"));
+            $this->set('newdateadh', $newdateadh->format("d-m-Y"));
+        }
         $this->set('titre', $titre);
         $this->set('nbsteps', $session->read('nbsteps'));
         $this->set('comptecyclos', $nvocompte->account_cyclos);
