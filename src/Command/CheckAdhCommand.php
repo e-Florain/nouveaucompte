@@ -25,9 +25,10 @@ class CheckAdhCommand extends Command
             "julie@florain.fr",
             "groche@guigeek.org"
         );
-        
-        foreach ($contactsadmin as $contact) {
-            $this->sendEmailMonitor($contact, $datas);
+        if (count($datas) > 0) { 
+            foreach ($contactsadmin as $contact) {
+                $this->sendEmailMonitor($contact, $datas);
+            }
         }
         return static::CODE_SUCCESS;
     }

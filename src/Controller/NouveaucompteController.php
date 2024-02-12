@@ -938,8 +938,13 @@ class NouveaucompteController extends AppController
         $florapi = $this->fetchTable('Florapi');
         $results = array();
         $name = $nvocompte->lastname." ".$nvocompte->firstname;
-        $now = new DateTime('NOW');
-        $startdate = $now->format("Y-m-d");
+        if ($nvocompte->startdate_debit != NULL) {
+            $startdate_debit = new DateTime($nvocompte->startdate_debit);
+            $startdate = $startdate_debit->format("Y-m-d");
+        } else {
+            $now = new DateTime('NOW');
+            $startdate = $now->format("Y-m-d");
+        }
         if (!$mollie->has_adh_florain($nvocompte->email)) {
             if ($nvocompte->nbeurosadhannuel != NULL) {
                 $results = $mollie->create_subscription_annually($nvocompte->nbeurosadhannuel, $customerid, $mandateId, "Adhésion Florain Annuelle", $startdate);

@@ -9,6 +9,7 @@
         <th>Nom</th>
         <th>Prénom</th>
         <th>Email</th>
+        <th>Cyclos</th>
         <th>A valider</th>
         <th>Fait</th>
         <th>App.</th>
@@ -34,6 +35,12 @@
         </td>
         <td>
             <?= $nvocompte->email ?>
+        </td>
+        <td>
+            <?php if($nvocompte->account_cyclos) {
+                echo '<i class="bi bi-check"></i>';
+            }
+            ?>
         </td>
         <td>
             <?php if($nvocompte->action_needed) {
