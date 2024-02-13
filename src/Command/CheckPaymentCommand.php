@@ -39,7 +39,7 @@ class CheckPaymentCommand extends Command
         $datein1month = new DateTime('1 month');
         $datein1monthstr = $datein1month->i18nFormat('YYYY-MM-dd');
         $nextdatestr = $datein1month->i18nFormat('dd MMM YYYY', 'Europe/Paris', 'fr-FR');
-        foreach ($subs['_embedded']['subscriptions'] as $sub) {
+        foreach ($subs as $sub) {
             if (($sub['status'] == 'active') and ($sub['description'] == 'Adhésion Florain Annuelle')) {
                 if ($sub['nextPaymentDate'] == $datein1monthstr) {
                     $customer = $mollie->get_customer_by_id($sub['customerId']);
@@ -50,8 +50,22 @@ class CheckPaymentCommand extends Command
                     $datas['date'] = $nextdatestr;
                     $datas['name'] = $name;
                     $datas['amount'] = $sub["amount"]["value"];
-                    Debug($datas);
-                    $this->sendEmailPayment($RECIPIENT_EMAIL, $sub['description'], $datas);
+                    //Debug($datas);
+                    $this->sendEmailFuturPayment($RECIPIENT_EMAIL, $sub['description'], $datas);
+                }
+            }
+        }
+
+        foreach ($subs as $sub) {
+            if (($sub['status'] == 'active') and ($sub['description'] == 'PRO adhésion annuelle')) {
+                if ($sub['nextPaymentDate'] <= $datein1monthstr) {
+                    $customer = $mollie->get_customer_by_id($sub['customerId']);
+                    $RECIPIENT_EMAIL=$customer['email'];
+                    $datas['date'] = $nextdatestr;
+                    $datas['name'] = $customer['name'];
+                    $datas['amount'] = $sub["amount"]["value"];
+                    //Debug($datas);
+                    $this->sendEmailProFuturPayment($RECIPIENT_EMAIL, $sub['description'], $datas);
                 }
             }
         }
@@ -65,12 +79,26 @@ class CheckPaymentCommand extends Command
         $mailer
             ->setEmailFormat('both')
             ->setTo($to)
-            ->setBcc('groche@guigeek.org')
             ->setSubject('Paiement Florain - '.$subject)
             ->setFrom(['noreply@florain.fr' => 'Le Florain Numérique'])
             ->setViewVars($datas)
             ->viewBuilder()
             ->setTemplate('paiement')
+            ->setLayout('default');
+        $mailer->deliver();
+    }
+
+    public function sendEmailProFuturPayment($to, $subject, $datas)
+    {
+        $mailer = new Mailer();
+        $mailer
+            ->setEmailFormat('both')
+            ->setTo($to)
+            ->setSubject('Paiement Florain - '.$subject)
+            ->setFrom(['noreply@florain.fr' => 'Le Florain Numérique'])
+            ->setViewVars($datas)
+            ->viewBuilder()
+            ->setTemplate('futurpropayment')
             ->setLayout('default');
         $mailer->deliver();
     }
@@ -81,7 +109,6 @@ class CheckPaymentCommand extends Command
         $mailer
             ->setEmailFormat('both')
             ->setTo($to)
-            ->setBcc('groche@guigeek.org')
             ->setSubject('Paiement Florain - '.$subject)
             ->setFrom(['noreply@florain.fr' => 'Le Florain Numérique'])
             ->setViewVars($datas)

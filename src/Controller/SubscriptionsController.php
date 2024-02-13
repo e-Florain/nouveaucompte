@@ -29,7 +29,7 @@ class SubscriptionsController extends AppController
         foreach ($customers as $customer) {
             $list_customers[$customer['id']] = $customer;
         }
-        $listsubscriptions = $mollie->get_all_subscriptions($from);
+        $listsubscriptions = $mollie->list_subscriptions($from);
         //var_dump($subscriptions);
         if (isset($listsubscriptions['_links']['next'])) {
             $href= $listsubscriptions['_links']['next']['href'];

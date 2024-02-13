@@ -142,7 +142,7 @@ class MollieTable extends Table
         return $infos;
     }
 
-    public function get_all_subscriptions($from = "")
+    public function list_subscriptions($from = "")
     {
         $http = new Client();
         if ($from == "") {
@@ -160,6 +160,19 @@ class MollieTable extends Table
         ]);
         $infos = $response->getJson();
         return $infos;
+    }
+
+    public function get_all_subscriptions()
+    {
+        $infos = $this->list_subscriptions();
+        $res = $infos['_embedded']['subscriptions'];
+        while ($infos['_links']['next'] != NULL) {
+            if (preg_match('/from=(\w+)\&/', $infos['_links']['next']['href'], $matches)) {
+                $infos = $this->list_subscriptions($matches[1]);
+                $res = array_merge($res, $infos['_embedded']['subscriptions']);
+            }
+        }
+        return $res;
     }
 
     public function get_subscription($customerid, $subscriptionid)
@@ -523,7 +536,7 @@ class MollieTable extends Table
     public function calculAmountChanges()
     {
         $total = 0;
-        $listsubscriptions = $this->get_all_subscriptions("");
+        $listsubscriptions = $this->list_subscriptions("");
         $subscriptions = $listsubscriptions['_embedded']['subscriptions'];
         foreach ($subscriptions as $subscription) {
             if ($subscription['status'] == 'active') {
@@ -538,7 +551,7 @@ class MollieTable extends Table
     public function calculAdhAnnuelle()
     {
         $total = 0;
-        $listsubscriptions = $this->get_all_subscriptions("");
+        $listsubscriptions = $this->list_subscriptions("");
         $subscriptions = $listsubscriptions['_embedded']['subscriptions'];
         foreach ($subscriptions as $subscription) {
             if ($subscription['status'] == 'active') {
@@ -553,7 +566,7 @@ class MollieTable extends Table
     public function calculAdhMensuelle()
     {
         $total = 0;
-        $listsubscriptions = $this->get_all_subscriptions("");
+        $listsubscriptions = $this->list_subscriptions("");
         $subscriptions = $listsubscriptions['_embedded']['subscriptions'];
         foreach ($subscriptions as $subscription) {
             if ($subscription['status'] == 'active') {
