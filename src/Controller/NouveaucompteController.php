@@ -858,12 +858,7 @@ class NouveaucompteController extends AppController
         } else {
             $infos['accept_newsletter'] = 'f';
         }
-        /*if ($nvocompte->nbeurosadhmensuel != NULL) {
-            $infos['nbeurosadhmensuel'] = $nvocompte->nbeurosadhmensuel;
-        }
-        if ($nvocompte->nbeurosadhannuel != NULL) {
-            $infos['nbeurosadhannuel'] = $nvocompte->nbeurosadhannuel;
-        }*/
+        
         if ($nvocompte->account_cyclos) {
             $infos['account_cyclos'] = 't';
             $infos['changeeuros'] = $nvocompte->nbflorains;
@@ -938,12 +933,15 @@ class NouveaucompteController extends AppController
         $florapi = $this->fetchTable('Florapi');
         $results = array();
         $name = $nvocompte->lastname." ".$nvocompte->firstname;
+        $boolstartdatenow = False;
         if ($nvocompte->startdate_debit != NULL) {
             $startdate_debit = new DateTime($nvocompte->startdate_debit);
             $startdate = $startdate_debit->format("Y-m-d");
+            $boolstartdatenow = False;
         } else {
             $now = new DateTime('NOW');
             $startdate = $now->format("Y-m-d");
+            $boolstartdatenow = True;
         }
         if (!$mollie->has_adh_florain($nvocompte->email)) {
             if ($nvocompte->nbeurosadhannuel != NULL) {
@@ -951,12 +949,14 @@ class NouveaucompteController extends AppController
                 if (!isset($results['id'])) {
                     $this->log('error create mollie subscription adh '.$nvocompte->nbeurosadhannuel.' '.$customerid.' '.$startdate.' '.print_r($results, TRUE), 'error');
                 } else {
-                    $datas = array(
-                        'email' => $nvocompte->email,
-                        'name' => $name,
-                        'amount' => $nvocompte->nbeurosadhannuel
-                    );
-                    $florapi->postMembership($datas);
+                    if ($boolstartdatenow) {
+                        $datas = array(
+                            'email' => $nvocompte->email,
+                            'name' => $name,
+                            'amount' => $nvocompte->nbeurosadhannuel
+                        );
+                        $florapi->postMembership($datas);
+                    }
                 }
             }
             if ($nvocompte->nbeurosadhmensuel != NULL) {
@@ -964,12 +964,14 @@ class NouveaucompteController extends AppController
                 if (!isset($results['id'])) {
                     $this->log('error create mollie subscription adh '.$nvocompte->nbeurosadhmensuel.' '.$customerid.' '.$startdate.' '.print_r($results, TRUE), 'error');
                 } else {
-                    $datas = array(
-                        'email' => $nvocompte->email,
-                        'name' => $name,
-                        'amount' => $nvocompte->nbeurosadhmensuel
-                    );
-                    $florapi->postMembership($datas);
+                    if ($boolstartdatenow) {
+                        $datas = array(
+                            'email' => $nvocompte->email,
+                            'name' => $name,
+                            'amount' => $nvocompte->nbeurosadhmensuel
+                        );
+                        $florapi->postMembership($datas);
+                    }
                 }
             }
         } else {
@@ -1034,8 +1036,16 @@ class NouveaucompteController extends AppController
                 }
 
                 $resultsodoo['infos']['email'] = $nvocompte->email;
+                $infosmails = $resultsodoo['infos'];
+                if ($nvocompte->nbeurosadhmensuel != NULL) {
+                    $infosmails['nbeurosadhmensuel'] = $nvocompte->nbeurosadhmensuel;
+                }
+                if ($nvocompte->nbeurosadhannuel != NULL) {
+                    $infosmails['nbeurosadhannuel'] = $nvocompte->nbeurosadhannuel;
+                }
+                $infosmails['todo']= $nvocompte->todo;
                 foreach ($contactsadmin as $contact) {
-                    $this->sendnouvelleinscription($contact, $resultsodoo['infos']);
+                    $this->sendnouvelleinscription($contact, $infosmails);
                 }
                 $data['done'] = True;
                 $this->update($uuid, $data);
@@ -1070,6 +1080,13 @@ class NouveaucompteController extends AppController
             $results = $this->create_infos_for_odoo($nvocompte);
             $infos = $results['infos'];
             $infos['email'] = $results['email'];
+            if ($nvocompte->nbeurosadhmensuel != NULL) {
+                $infos['nbeurosadhmensuel'] = $nvocompte->nbeurosadhmensuel;
+            }
+            if ($nvocompte->nbeurosadhannuel != NULL) {
+                $infos['nbeurosadhannuel'] = $nvocompte->nbeurosadhannuel;
+            }
+            $infos['todo']= $nvocompte->todo;
             foreach ($contactsadmin as $contact) {
                 $this->sendnouvelleinscription($contact, $infos);
             }
