@@ -308,6 +308,20 @@ class MollieTable extends Table
         return $infos;
     }
 
+    public function delete_customer($id)
+    {
+        $http = new Client();
+        $url = $this->mollie['url'] . "/customers/".$id;
+        $response = $http->delete($url, [], [
+            'headers' => [
+                'Authorization' => 'Bearer ' . $this->mollie['key'],
+                'Content-Type' => 'application/json'
+            ]
+        ]);
+        $infos = $response->getJson();
+        return $infos;
+    }
+
     public function create_mandate($customer, $iban, $consumerName, $email)
     {
         $http = new Client();

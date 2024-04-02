@@ -115,5 +115,27 @@ class CustomersController extends AppController
 
     }
 
+    public function delete($customerid)
+    {
+        $this->Authorization->skipAuthorization();
+        $session = $this->request->getSession();
+        $email = $session->read('User.email');
+        if (!isset($email)) {
+            return $this->redirect(['action' => 'logout']);
+        }
+        $users = $this->fetchTable('Users');
+        $role = $users->getRole($email);
+        if (($role != "root") or ($role == "admin")) {
+            $this->Flash->error(__('Vous n\'êtes pas autorisé à accéder à cette page'));
+            return $this->redirect(['controller' => 'Users', 'action' => 'moncompte']);
+        }
+        $this->viewBuilder()->setLayout('bdc');
+        $mollie = $this->fetchTable('Mollie');
+        //Debug($customerid);
+        $mollie->delete_customer($customerid);
+        $this->Flash->success(__('Le client a été effacé.'));
+        return $this->redirect('/customers/index');
+    }
+
 
 }

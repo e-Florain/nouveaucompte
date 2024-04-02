@@ -268,3 +268,20 @@
       return true;
     }
   }
+
+  $( "#amount" ).change(function() {
+    var amount = $("#amount").val();
+    console.log("amount "+amount);
+    if (amount ==  "500") {
+      console.log("500");
+    }
+  });
+
+  function delete_customer() {
+    let text = "Etes-vous sur de vouloir effacer ce client ?";
+    if (confirm(text) == true) {
+      return true;
+    } else {
+      return false;
+    }
+  }

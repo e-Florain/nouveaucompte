@@ -43,8 +43,8 @@
             <?php echo $customer['createdAt']; ?>
         </td>
         <td>
-            <?php echo '<a href="/customers/edit/'.$customer['id'].'" ><i class="bi bi-pen"></i></a>'; ?>
-            <?php echo '<a href="/customers/delete?customer_id='.$customer['id'].'"><i class="bi bi-trash"></i></a>'; ?>
+            <?php echo '<a href="/customers/edit/'.$customer['id'].'"><i class="bi bi-pen"></i></a>'; ?>
+            <?php echo '<a href="/customers/delete/'.$customer['id'].'" onclick="return delete_customer();"><i class="bi bi-trash"></i></a>'; ?>
         </td>
     </tr>
     <?php endforeach; ?>
