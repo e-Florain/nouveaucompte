@@ -2,11 +2,6 @@
 // src/Controller/PaymentsController.php
 
 namespace App\Controller;
-use Cake\Filesystem\Folder;
-use Cake\Filesystem\File;
-use Cake\I18n\FrozenTime;
-use Cake\Http\Client;
-use Cake\Datasource\Paging\NumericPaginator;
 
 class PaymentsController extends AppController
 {

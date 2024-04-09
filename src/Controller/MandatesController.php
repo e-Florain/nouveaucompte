@@ -3,11 +3,6 @@
 
 namespace App\Controller;
 
-use Cake\Filesystem\Folder;
-use Cake\Filesystem\File;
-use Cake\I18n\FrozenTime;
-use Cake\Http\Client;
-
 class MandatesController extends AppController
 {
     public function index()

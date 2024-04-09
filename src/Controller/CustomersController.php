@@ -4,7 +4,7 @@
 namespace App\Controller;
 use Cake\Filesystem\Folder;
 use Cake\Filesystem\File;
-use Cake\I18n\FrozenTime;
+use Cake\I18n\DateTime;
 use Cake\Http\Client;
 
 class CustomersController extends AppController
@@ -74,7 +74,7 @@ class CustomersController extends AppController
             return $this->redirect(['controller' => 'Users', 'action' => 'moncompte']);
         }
         $this->viewBuilder()->setLayout('bdc');
-        $now = FrozenTime::now();
+        $now = DateTime::now();
         $startdate = $now->i18nFormat('yyyy-MM-dd');
         $this->set(compact('startdate'));
         $mollie = $this->fetchTable('Mollie');

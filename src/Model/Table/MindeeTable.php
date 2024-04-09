@@ -6,7 +6,7 @@ use Cake\Core\Configure;
 use Cake\ORM\Table;
 use Cake\Http\Client;
 use Cake\ORM\Locator;
-use Cake\I18n\FrozenTime;
+use Cake\I18n\DateTime;
 use Cake\ORM\Locator\LocatorAwareTrait;
 
 class MindeeTable extends Table
@@ -179,10 +179,10 @@ class MindeeTable extends Table
 
     public function isMajor($datestr)
     {
-        $d = FrozenTime::createFromFormat('Y-m-d', $datestr, 'Europe/Paris');
-        $now = new FrozenTime('NOW');
+        $d = DateTime::createFromFormat('Y-m-d', $datestr, 'Europe/Paris');
+        $now = new DateTime('NOW');
         $newDate = $d->modify('+18 years');
-        //$interval = FrozenTime::createfromdatestring('+18 years');
+        //$interval = DateTime::createfromdatestring('+18 years');
         //$d->add($interval);
         return ($now > $newDate);
     }
