@@ -41,6 +41,19 @@ class MollieTable extends Table
         return $results;
     }
 
+    public function get_all_payments()
+    {
+        $infos = $this->list_payments();
+        $res = $infos['_embedded']['payments'];
+        while ($infos['_links']['next'] != NULL) {
+            if (preg_match('/from=(\w+)\&/', $infos['_links']['next']['href'], $matches)) {
+                $infos = $this->list_payments($matches[1]);
+                $res = array_merge($res, $infos['_embedded']['payments']);
+            }
+        }
+        return $res;
+    }
+
     public function list_mandates($customer)
     {
         $http = new Client();
