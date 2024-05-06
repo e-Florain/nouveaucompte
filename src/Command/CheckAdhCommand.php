@@ -5,6 +5,7 @@ use Cake\Command\Command;
 use Cake\Console\Arguments;
 use Cake\Console\ConsoleIo;
 use Cake\Mailer\Mailer;
+use Cake\Core\Configure;
 
 class CheckAdhCommand extends Command
 {
@@ -13,19 +14,18 @@ class CheckAdhCommand extends Command
         $datas = array();
         $florapi = $this->fetchTable('Florapi');
         $adhs = $florapi->getAllAdh();
+        $exception_accounts = Configure::read('ExceptionAdh');
         foreach ($adhs as $adh) {
             if ($adh['account_cyclos']) {
-                if (!$this->checkMollie($adh['email'])) {
-                    $datas[] = $adh['email'];
+                if (!in_array($adh['email'], $exception_accounts)) {
+                    if (!$this->checkMollie($adh['email'])) {
+                        $datas[] = $adh['email'];
+                    }
                 }
             }
         }
-        $contactsadmin = array(
-            "virginie@florain.fr",
-            "julie@florain.fr",
-            "groche@guigeek.org"
-        );
-        if (count($datas) > 0) { 
+        $contactsadmin = Configure::read('ContactsAdmin');
+        if (count($datas) > 0) {
             foreach ($contactsadmin as $contact) {
                 $this->sendEmailMonitor($contact, $datas);
             }
