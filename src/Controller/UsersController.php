@@ -5,8 +5,6 @@ namespace App\Controller;
 
 use Cake\I18n\DateTime;
 use Cake\Mailer\Mailer;
-use Cake\I18n\FrozenTime;
-
 
 class UsersController extends AppController
 {
@@ -499,6 +497,13 @@ class UsersController extends AppController
             ->setTemplate('otp')
             ->setLayout('default');
         $mailer->deliver();
+    }
+
+    public function flashAmount($amount)
+    {
+        $this->Authorization->skipAuthorization();
+        //$this->viewBuilder()->setLayout('ajax');
+        $this->Flash->warning('My message. '.$amount);
     }
 }
 ?>

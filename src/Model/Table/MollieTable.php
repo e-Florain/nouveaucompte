@@ -54,6 +54,25 @@ class MollieTable extends Table
         return $res;
     }
 
+    public function list_chargebacks($from = "")
+    {
+        $http = new Client();
+        if ($from == "") {
+            $url = $this->mollie['url'] . '/chargebacks?limit=250';
+        } else {
+            $url = $this->mollie['url'] . '/chargebacks?from=' . $from . '&limit=250';
+        }
+        $found = false;
+        $response = $http->get($url, [], [
+            'headers' => [
+                'Authorization' => 'Bearer ' . $this->mollie['key'],
+                'Content-Type' => 'application/json'
+            ]
+        ]);
+        $results = $response->getJson();
+        return $results;
+    }
+
     public function list_mandates($customer)
     {
         $http = new Client();

@@ -102,7 +102,7 @@ class CheckAdhMollieCommand extends Command
                                         'name' => $adh['lastname']." ".$adh['firstname'],
                                         'amount' => strval($resultsMollie['AdhMensuelle'][$adh['email']]['amount'])
                                     );
-                                    //$florapi->postMembership($datas);
+                                    $florapi->postMembership($datas);
                                     $datas['lastname'] = $adh['lastname'];
                                     $datas['firstname'] = $adh['firstname'];
                                     $datas['street'] = $adh['street'];
@@ -132,37 +132,40 @@ class CheckAdhMollieCommand extends Command
                             $datemollie = new DateTime($resultsMollie['AdhAnnuelle'][$adh['email']]['paidAt']);
                             if ($datemollie > $today_dec_1_year) {
                                 if (($adh['membership_state'] == 'old') or ($adh['membership_state'] == NULL)) {
-                                    echo "Annuelle : ";
-                                    echo $adh['lastname']." ";
-                                    echo $adh['firstname']." ";
-                                    echo $datemembershipstop->format('Y-m-d')." ";
-                                    echo $datemollie->format('Y-m-d')."\n";
-                                    $datas = array(
-                                        'email' => $adh['email'],
-                                        'name' => $adh['lastname']." ".$adh['firstname'],
-                                        'amount' => strval($resultsMollie['AdhAnnuelle'][$adh['email']]['amount'])
-                                    );
-                                    //$florapi->postMembership($datas);
-                                    $datas['lastname'] = $adh['lastname'];
-                                    $datas['firstname'] = $adh['firstname'];
-                                    $datas['street'] = $adh['street'];
-                                    $datas['zip'] = $adh['zip'];
-                                    $datas['city'] = $adh['city'];
-                                    $datas['account_cyclos'] = $adh['account_cyclos'];
-                                    if ($adh['orga_choice'] != null) {
-                                        foreach ($assos as $asso) {
-                                            if ($asso['id'] == $adh['orga_choice']) {
-                                                $assochosen = $asso['name'];
-                                                continue;
+                                    /* condition à virer */
+                                    if ($adh['email'] != "eva.buchi@wanadoo.fr") {
+                                        echo "Annuelle : ";
+                                        echo $adh['lastname']." ";
+                                        echo $adh['firstname']." ";
+                                        echo $datemembershipstop->format('Y-m-d')." ";
+                                        echo $datemollie->format('Y-m-d')."\n";
+                                        $datas = array(
+                                            'email' => $adh['email'],
+                                            'name' => $adh['lastname']." ".$adh['firstname'],
+                                            'amount' => strval($resultsMollie['AdhAnnuelle'][$adh['email']]['amount'])
+                                        );
+                                        $florapi->postMembership($datas);
+                                        $datas['lastname'] = $adh['lastname'];
+                                        $datas['firstname'] = $adh['firstname'];
+                                        $datas['street'] = $adh['street'];
+                                        $datas['zip'] = $adh['zip'];
+                                        $datas['city'] = $adh['city'];
+                                        $datas['account_cyclos'] = $adh['account_cyclos'];
+                                        if ($adh['orga_choice'] != null) {
+                                            foreach ($assos as $asso) {
+                                                if ($asso['id'] == $adh['orga_choice']) {
+                                                    $assochosen = $asso['name'];
+                                                    continue;
+                                                }
                                             }
                                         }
+                                        if (isset($assochosen)) {
+                                            $datas['orga_choice'] = $assochosen;
+                                        } else {
+                                            $datas['orga_choice'] = "Non choisie";
+                                        }
+                                        $results[] = $datas;
                                     }
-                                    if (isset($assochosen)) {
-                                        $datas['orga_choice'] = $assochosen;
-                                    } else {
-                                        $datas['orga_choice'] = "Non choisie";
-                                    }
-                                    $results[] = $datas;
                                 }
                             }
                         }
@@ -179,7 +182,7 @@ class CheckAdhMollieCommand extends Command
         $mailer
             ->setEmailFormat('both')
             ->setTo($to)
-            ->setSubject('Florain Test réadhésion des adhérents')
+            ->setSubject('Florain - réadhésion des adhérents')
             ->setFrom(['noreply@florain.fr' => 'Le Florain Numérique'])
             ->setViewVars(array("datas" => $datas))
             ->viewBuilder()

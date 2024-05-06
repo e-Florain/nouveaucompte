@@ -6,6 +6,7 @@ use Cake\Console\Arguments;
 use Cake\Console\ConsoleIo;
 use Cake\I18n\DateTime;
 use Cake\Mailer\Mailer;
+use Cake\Core\Configure;
 
 class CheckPaymentCommand extends Command
 {
@@ -14,6 +15,7 @@ class CheckPaymentCommand extends Command
         $datas = array();
         $yesterday = new DateTime('yesterday');
         $mollie = $this->fetchTable('Mollie');
+        $contactsadmin = Configure::read('ContactsAdmin');
         $payments = $mollie->list_payments();
         foreach ($payments['_embedded']['payments'] as $payment) {
             if ($payment["method"] == "directdebit") {
@@ -29,7 +31,7 @@ class CheckPaymentCommand extends Command
                             $datas['date'] = $nextdatestr;
                             $datas['name'] = $payment["details"]["consumerName"];
                             $datas['amount'] = $payment["amount"]["value"];
-                            $this->sendEmailPayment($RECIPIENT_EMAIL, $payment['description'], $datas);
+                            //$this->sendEmailPayment($RECIPIENT_EMAIL, $payment['description'], $datas);
                         }
                     }
                 }
@@ -58,7 +60,7 @@ class CheckPaymentCommand extends Command
 
         foreach ($subs as $sub) {
             if (($sub['status'] == 'active') and ($sub['description'] == 'PRO adhésion annuelle')) {
-                if ($sub['nextPaymentDate'] <= $datein1monthstr) {
+                if ($sub['nextPaymentDate'] == $datein1monthstr) {
                     $customer = $mollie->get_customer_by_id($sub['customerId']);
                     $RECIPIENT_EMAIL=$customer['email'];
                     $datas['date'] = $nextdatestr;
@@ -70,6 +72,26 @@ class CheckPaymentCommand extends Command
             }
         }
 
+        $datas = array();
+        $chargebacks = $mollie->list_chargebacks();     
+        foreach ($chargebacks['_embedded']['chargebacks'] as $chargeback) {
+            $createdAt = new DateTime($chargeback['createdAt']);
+            if ($createdAt->format('Y-m-d') == $yesterday->format('Y-m-d') ) {
+                $datas['paymentId'] = $chargeback['paymentId'];
+                $datas['amount'] = $chargeback["amount"]["value"];
+                foreach ($payments['_embedded']['payments'] as $payment) {
+                    if ($payment['id'] == $chargeback['paymentId']) {
+                        $datas['name'] = $payment["details"]["consumerName"];
+                        $datas['date'] = $payment['paidAt'];
+                    }
+                }
+            }
+        }
+        if (count($datas) > 0) {
+            foreach ($contactsadmin as $contact) {
+                $this->sendChargebackInfo($contact, $datas);
+            }
+        }
         return static::CODE_SUCCESS;
     }
 
@@ -84,6 +106,21 @@ class CheckPaymentCommand extends Command
             ->setViewVars($datas)
             ->viewBuilder()
             ->setTemplate('paiement')
+            ->setLayout('default');
+        $mailer->deliver();
+    }
+
+    public function sendChargebackInfo($contact, $datas)
+    {
+        $mailer = new Mailer();
+        $mailer
+            ->setEmailFormat('both')
+            ->setTo($contact)
+            ->setSubject('Attention : paiement remboursé')
+            ->setFrom(['noreply@florain.fr' => 'Le Florain Numérique'])
+            ->setViewVars($datas)
+            ->viewBuilder()
+            ->setTemplate('chargebackinfo')
             ->setLayout('default');
         $mailer->deliver();
     }

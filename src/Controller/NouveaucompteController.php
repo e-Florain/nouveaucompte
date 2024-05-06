@@ -43,7 +43,7 @@ class NouveaucompteController extends AppController
     {
         parent::beforeFilter($event);
         $this->Authentication->allowUnauthenticated(['index', 'infos', 'dejacompte', 'get', 'confirmationemail', 'infossup', 'uploadid', 'validid', 
-        'adh', 'choosechange', 'editiban', 'chooseasso', 'fin', 'activate', 'updateadh', 'test']);
+        'adh', 'choosechange', 'editiban', 'chooseasso', 'fin', 'activate', 'updateadh', 'updateadhfordebug', 'test']);
     }
 
     public function index()
@@ -1063,6 +1063,68 @@ class NouveaucompteController extends AppController
         $contactsadmin = Configure::read('ContactsAdmin');
         $session = $this->request->getSession();
         $uuid = $session->read('uuid');
+        if ($uuid == NULL) {
+            $this->log('session expired', 'error');
+            return $this->redirect('/nouveaucompte/index');
+        }
+        $nvocomptes = $this->Nouveaucompte->findByUuid($uuid);
+        $count = $this->Nouveaucompte->findByUuid($uuid)->count();
+        if ($count > 0) {
+            $nvocompte = $nvocomptes->firstOrFail();
+            $this->set('account_cyclos', $nvocompte->account_cyclos);
+        } else {
+            $this->log('uuid not exist', 'error');
+            return $this->redirect('/nouveaucompte/index');
+        }
+        if (!$nvocompte->done) {
+            $results = $this->create_infos_for_odoo($nvocompte);
+            $infos = $results['infos'];
+            $infos['email'] = $results['email'];
+            if ($nvocompte->nbeurosadhmensuel != NULL) {
+                $infos['nbeurosadhmensuel'] = $nvocompte->nbeurosadhmensuel;
+            }
+            if ($nvocompte->nbeurosadhannuel != NULL) {
+                $infos['nbeurosadhannuel'] = $nvocompte->nbeurosadhannuel;
+            }
+            $infos['todo']= $nvocompte->todo;
+            foreach ($contactsadmin as $contact) {
+                $this->sendnouvelleinscription($contact, $infos);
+            }
+            // create Odoo Adh
+            $this->update_odoo_adh($results);
+                
+            // create Mollie user if necessary 
+            $customerid = $this->create_mollie_user($nvocompte->lastname, $nvocompte->firstname, $nvocompte->email);
+
+            // create Mollie mandate 
+            $infosmandate = $this->create_mandate($nvocompte, $customerid);
+
+            // create Mollie subscription for adh 
+            $results = $this->create_mollie_adh($nvocompte, $customerid, $infosmandate['id']);
+
+            // create Mollie subscription for change
+            if ($nvocompte->account_cyclos) {
+                $this->create_mollie_change($nvocompte, $customerid, $infosmandate['id']);
+            }
+            $data['done'] = True;
+            $this->update($uuid, $data);
+        }
+        $this->log('updateadh '.$uuid, 'debug');
+    }
+
+    public function updateadhfordebug($uuid="")
+    {
+        Debug("test");
+        $this->Authorization->skipAuthorization();
+        $contactsadmin = Configure::read('ContactsAdmin');
+        $session = $this->request->getSession();
+        $parameters = $this->request->getAttribute('params');
+        if (isset($parameters['?']['uuid'])) {
+            $uuid = $parameters['?']['uuid'];
+        } else {
+            return ;
+        }
+        Debug($uuid);
         if ($uuid == NULL) {
             $this->log('session expired', 'error');
             return $this->redirect('/nouveaucompte/index');
