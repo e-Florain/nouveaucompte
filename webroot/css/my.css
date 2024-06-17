@@ -40,9 +40,24 @@ a.brand-logo {
     color: #70706f;
 }
 
+@media (min-width:500px) {
+    .navbar {
+        padding-left: 100px;   
+    }
+}
+
+@media (max-width:500px) {
+    .navbar {
+        flex-wrap: nowrap;
+    }
+    main > .container {
+        width: 100%;
+        padding: 5px 5px 5px;
+    }
+}
+
 .navbar {
     background-color: #d7da23;
-    padding-left: 100px;
     font-family: FuturaLight;
 }
 
