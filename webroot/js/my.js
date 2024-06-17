@@ -274,6 +274,11 @@
     console.log("amount "+amount);
     if (amount ==  "500") {
       console.log("500");
+      $(".alertcb").addClass("alert-warning");
+      $(".alertcb").html("Attention le change par CB engendre des frais conséquents pour l'association")
+    } else {
+      $(".alertcb").removeClass("alert-warning");
+      $(".alertcb").html("");
     }
   });
 

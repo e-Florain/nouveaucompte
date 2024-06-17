@@ -79,7 +79,7 @@ $cakeDescription = 'Nouveaucompte';
 
     <main class="flex-shrink-0">
         <div class="container">
-            <br>
+            <div class="alertcb alert">test</div>
             <?= $this->Flash->render() ?>
             <?= $this->fetch('content') ?>
         </div>
