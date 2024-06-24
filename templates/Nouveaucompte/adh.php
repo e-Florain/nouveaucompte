@@ -67,8 +67,8 @@
     <div class="row">
         <div class="col-sm-6">
             <select id="adhchoice" name="adhchoice" class="form-select" required aria-label="Default select example">
-                <option value="" disabled selected>Choix de l'adhésion</option>
-                <option value="annuel">Prélèvement annuel</option>
+                <option value="" disabled>Choix de l'adhésion</option>
+                <option value="annuel" selected>Prélèvement annuel</option>
                 <option value="mensuel">Prélèvement mensuel</option>
             </select>
         </div>
@@ -77,7 +77,7 @@
     <div class="col-sm-8 adhannuel">
         <b>*Montant annuel</b>
         <div class="form-check">
-            <input class="with-gap nbeurosadhannuel" id="nbeurosadhannuel" name="nbeurosadhannuel" type="radio" disabled
+            <input class="with-gap nbeurosadhannuel" id="nbeurosadhannuel" name="nbeurosadhannuel" type="radio" 
                 checked value="24">
             <label class="form-check-label" for="flexRadioDefault1">
                 <span>Tarif <b>NORMAL</b> &nbsp;&nbsp;&nbsp; : <b>24 € / an </b> (soit un équivalent de <b>2 € /
@@ -85,7 +85,7 @@
             </label>
         </div>
         <div class="form-check">
-            <input class="with-gap nbeurosadhannuel" id="nbeurosadhannuel" name="nbeurosadhannuel" type="radio" disabled
+            <input class="with-gap nbeurosadhannuel" id="nbeurosadhannuel" name="nbeurosadhannuel" type="radio" 
                  value="72">
             <label class="form-check-label" for="flexRadioDefault1">
                 <span>Tarif <b>SOUTIEN</b> &nbsp; &nbsp;: <b>72 € / an</b> (soit un équivalent de <b>6 € /
@@ -93,7 +93,7 @@
             </label>
         </div>
         <div class="form-check">
-            <input class="with-gap nbeurosadhannuel" id="nbeurosadhannuel" name="nbeurosadhannuel" type="radio" disabled
+            <input class="with-gap nbeurosadhannuel" id="nbeurosadhannuel" name="nbeurosadhannuel" type="radio" 
                  value="6">
             <label class="form-check-label" for="flexRadioDefault1">
                 <span>Tarif <b>SOLIDAIRE</b> : <b>6 € / an </b> (soit un équivalent de <b>0.5 € / mois</b>) <i>(Si
@@ -101,7 +101,7 @@
             </label>
         </div>
         <div class="form-check">
-            <input class="with-gap nbeurosadhannuel" id="nbeurosadhannuel" name="nbeurosadhannuel" type="radio" disabled
+            <input class="with-gap nbeurosadhannuel" id="nbeurosadhannuel" name="nbeurosadhannuel" type="radio" 
                  value="other">
             <label class="form-check-label" for="flexRadioDefault1">
                 <span>Autre montant (> 6 € / an)</span>
