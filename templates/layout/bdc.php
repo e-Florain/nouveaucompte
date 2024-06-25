@@ -59,22 +59,22 @@ $cakeDescription = 'Nouveaucompte';
                         <a class="nav-link active" aria-current="page" href="/nouveaucompte/list">LISTE DES DEMANDES</a>
                         </li>
                         <li class="nav-item">
-                        <a class="nav-link" href="/users/moncompte">MONCOMPTE</a>
+                        <a class="nav-link" href="/users/moncompte" onclick="waiting();">MONCOMPTE</a>
                         </li>
                         <li class="nav-item">
-                        <a class="nav-link" href="/customers">CLIENTS</a>
+                        <a class="nav-link" href="/customers" onclick="waiting();">CLIENTS</a>
                         </li>
                         <li class="nav-item">
-                        <a class="nav-link" href="/payments">PAIEMENTS</a>
+                        <a class="nav-link" href="/payments" onclick="waiting();">PAIEMENTS</a>
                         </li>
                         <li class="nav-item">
-                        <a class="nav-link" href="/mandates">MANDATS</a>
+                        <a class="nav-link" href="/mandates" onclick="waiting();">MANDATS</a>
                         </li>
                         <li class="nav-item">
-                        <a class="nav-link" href="/subscriptions">PRELEVEMENTS</a>
+                        <a class="nav-link" href="/subscriptions" onclick="waiting();">PRELEVEMENTS</a>
                         </li>
                         <li class="nav-item">
-                        <a class="nav-link" href="/chargebacks">CHARGEBACKS</a>
+                        <a class="nav-link" href="/chargebacks" onclick="waiting();">CHARGEBACKS</a>
                         </li>
                     </ul>
                 </div>
