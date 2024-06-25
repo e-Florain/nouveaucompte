@@ -73,6 +73,19 @@ class MollieTable extends Table
         return $results;
     }
 
+    public function get_all_chargebacks()
+    {
+        $infos = $this->list_chargebacks();
+        $res = $infos['_embedded']['chargebacks'];
+        while ($infos['_links']['next'] != NULL) {
+            if (preg_match('/from=(\w+)\&/', $infos['_links']['next']['href'], $matches)) {
+                $infos = $this->list_chargebacks($matches[1]);
+                $res = array_merge($res, $infos['_embedded']['chargebacks']);
+            }
+        }
+        return $res;
+    }
+
     public function list_mandates($customer)
     {
         $http = new Client();

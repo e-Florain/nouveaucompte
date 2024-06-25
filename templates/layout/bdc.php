@@ -73,6 +73,9 @@ $cakeDescription = 'Nouveaucompte';
                         <li class="nav-item">
                         <a class="nav-link" href="/subscriptions">PRELEVEMENTS</a>
                         </li>
+                        <li class="nav-item">
+                        <a class="nav-link" href="/chargebacks">CHARGEBACKS</a>
+                        </li>
                     </ul>
                 </div>
                 <ul class="navbar-nav me-auto mb-1 mb-lg-0">
