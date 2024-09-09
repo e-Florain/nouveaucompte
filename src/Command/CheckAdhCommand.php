@@ -40,10 +40,10 @@ class CheckAdhCommand extends Command
         $mollie = $this->fetchTable('Mollie');
         $subs = $mollie->get_subscriptions($email);
         foreach ($subs as $sub) {
-            if ($sub['description'] == "Change Florain") {
+            if ($sub['description'] == "Change Florain" && $sub['status']=="active") {
                 $boolchange = True;
             }
-            if (($sub['description'] == "Adhésion Florain Annuelle") or ($sub['description'] == "Adhésion Florain Mensuelle")) {
+            if ((($sub['description'] == "Adhésion Florain Annuelle") or ($sub['description'] == "Adhésion Florain Mensuelle")) && $sub['status']=="active") {
                 $booladh = True;
             }
         }

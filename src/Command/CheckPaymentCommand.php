@@ -31,7 +31,7 @@ class CheckPaymentCommand extends Command
                             $datas['date'] = $nextdatestr;
                             $datas['name'] = $payment["details"]["consumerName"];
                             $datas['amount'] = $payment["amount"]["value"];
-                            //$this->sendEmailPayment($RECIPIENT_EMAIL, $payment['description'], $datas);
+                            $this->sendEmailPayment($RECIPIENT_EMAIL, $payment['description'], $datas);
                         }
                     }
                 }
