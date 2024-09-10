@@ -39,6 +39,38 @@ class FlorapiTable extends Table
         }
     }
 
+    public function getAdhpros($params)
+    {
+        $http = new Client();
+        $paramsurl = http_build_query($params);
+        $url = $this->florapi['url'].'/getAdhpros?'.$paramsurl;
+        $found = false;
+        $response = $http->get($url, [], [
+            'headers' => [
+                'x-api-key' => $this->florapi['key'],
+                'Content-Type' => 'application/json'
+                ]
+        ]);
+        $results = $response->getJson();
+        return $results;
+    }
+
+    public function getAdhs($params) 
+    {   
+        $http = new Client();
+        $paramsurl = http_build_query($params);
+        $url = $this->florapi['url'].'/getAdhs?'.$paramsurl;
+        $found = false;
+        $response = $http->get($url, [], [
+            'headers' => [
+                'x-api-key' => $this->florapi['key'],
+                'Content-Type' => 'application/json'
+                ]
+        ]);
+        $results = $response->getJson();
+        return $results;
+    }
+
     public function getAllAdh()
     {
         $http = new Client();

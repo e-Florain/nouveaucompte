@@ -56,6 +56,9 @@ $cakeDescription = 'Nouveaucompte';
                 <div class="collapse navbar-collapse" id="navbarCollapse">
                     <ul class="navbar-nav">
                         <li class="nav-item">
+                        <a class="nav-link" href="/dashboard">DASHBOARD</a>
+                        </li>
+                        <li class="nav-item">
                         <a class="nav-link active" aria-current="page" href="/nouveaucompte/list">LISTE DES DEMANDES</a>
                         </li>
                         <li class="nav-item">
