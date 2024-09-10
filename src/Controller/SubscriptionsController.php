@@ -29,7 +29,7 @@ class SubscriptionsController extends AppController
         foreach ($customers as $customer) {
             $list_customers[$customer['id']] = $customer;
         }
-        $listsubscriptions = $mollie->list_subscriptions($from);
+        /*$listsubscriptions = $mollie->list_subscriptions($from);
         //var_dump($subscriptions);
         if (isset($listsubscriptions['_links']['next'])) {
             $href= $listsubscriptions['_links']['next']['href'];
@@ -45,7 +45,9 @@ class SubscriptionsController extends AppController
             }
             $this->set(compact('prevfrom'));
         }
-        $subscriptions = $listsubscriptions['_embedded']['subscriptions'];
+        $subscriptions = $listsubscriptions['_embedded']['subscriptions'];*/
+        $subscriptions = $mollie->get_all_subscriptions();
+        //var_dump($listsubscriptions);
         $nbsubscriptions = count($subscriptions);
         $this->set(compact('nbsubscriptions'));
         $this->set(compact('list_customers'));
