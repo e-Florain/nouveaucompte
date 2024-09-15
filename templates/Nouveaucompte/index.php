@@ -15,17 +15,6 @@
         <h5>Non, il n'est pas obligatoire d'utiliser la monnaie numérique pour payer en Florain. Les billets continuent à
         exister, et il sera possible d'utiliser les deux moyens de paiement, ou bien un seul (billets ou numérique) si
         vous le préférez.
-        <br><br>
-        Si vous souhaitez (ré)adhérer par prélèvement automatique annuel mais sans compte numérique et en continuant à utiliser uniquement les billets,
-        <!--Si vous souhaitez adhérer et utiliser uniquement des florains en version papier, rendez vous dans un bureau de change ou -->
-
-        <button type="button" class="btn btn-primary">
-            <?php echo $this->Html->link("Cliquez ici", [
-                'controller' => 'nouveaucompte',
-                'action' => 'infos',
-                '?' => ['comptecyclos' => "false"]
-            ]); ?>
-        </button>
         </h5>
     </div>
 </div>
@@ -53,43 +42,61 @@
 <br>
 
 <div class="row">
-    <h3><b>Vous êtes prêt ? (Durée moyenne de la procédure : 4 minutes)</b></h3>
-    <div class="col-md-8 offset-md-1">
-        <h5>Pour débuter la création de votre compte, précisez nous si vous êtes déjà adhérent ou non.</h5>
-    </div>
+    <h3><b>Je suis déjà adhérent, ouvrir mon compte en ligne</b></h3>
+        <div class="input-field col s12">
+                <button type="button" class="btn btn-primary">
+                <?php echo $this->Html->link("Ouvrir mon compte en ligne (déjà adhérent)", [
+                    'controller' => 'nouveaucompte',
+                    'action' => 'dejacompte'
+                ]); ?>
+                </button>
+        </div>
 </div>
 
+<br>
+<div class="row">
+    <div class="col s12">
+        <h5>OU</h5>
+    </div>
+</div>
 <br>
 
 <div class="row">
     <h3><b>Adhérer au Florain</b></h3>
-            <div class="input-field col s12">
+        <div class="input-field col s12">
                 <button type="button" class="btn btn-primary">
-                <?php echo $this->Html->link("Cliquez ici", [
+                <?php echo $this->Html->link("Adhérer + ouvrir mon compte en ligne", [
                     'controller' => 'nouveaucompte',
                     'action' => 'infos',
                     '?' => ['comptecyclos' => 'true']
                 ]); ?>
                 </button>
-            </div>
         </div>
-        <br>
-        <div class="row">
-            <div class="col s12">
-                <h5>OU</h5>
-            </div>
-        </div>
-        <br>
-        <div class="row">
-            <h3><b>Je suis déjà adhérent, ouvrir mon compte en ligne</b></h3>
-            <div class="input-field col s12">
-                <button type="button" class="btn btn-primary">
-                <?php echo $this->Html->link("Cliquez ici", [
-                    'controller' => 'nouveaucompte',
-                    'action' => 'dejacompte'
-                ]); ?>
-                </button>
-            </div>
-        </div>
+</div>
+
+
+<br>
+<div class="row">
+    <div class="col s12">
+        <h5>OU</h5>
     </div>
+</div>
+<br>
+
+
+<div class="row">
+    <h3><b>Je ne souhaite pas ouvrir de compte en ligne, mais je veux adhérer par prélèvement SEPA</b></h3>
+    <div class="input-field col s12">
+        <button type="button" class="btn btn-primary">
+            <?php echo $this->Html->link("Adhérer uniquement", [
+                'controller' => 'nouveaucompte',
+                'action' => 'infos',
+                '?' => ['comptecyclos' => "false"]
+            ]); ?>
+        </button>
+    </div>
+</div>
+
+
+</div>
 </div>
