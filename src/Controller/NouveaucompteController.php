@@ -42,7 +42,7 @@ class NouveaucompteController extends AppController
     public function beforeFilter(\Cake\Event\EventInterface $event)
     {
         parent::beforeFilter($event);
-        $this->Authentication->allowUnauthenticated(['index', 'infos', 'dejacompte', 'get', 'confirmationemail', 'infossup', 'uploadid', 'validid', 
+        $this->Authentication->allowUnauthenticated(['index', 'index2', 'infos', 'dejacompte', 'get', 'confirmationemail', 'infossup', 'uploadid', 'validid', 
         'adh', 'choosechange', 'editiban', 'chooseasso', 'fin', 'activate', 'updateadh', 'updateadhfordebug', 'test']);
     }
 
@@ -52,6 +52,14 @@ class NouveaucompteController extends AppController
         $session = $this->request->getSession();
         $session->destroy();
     }
+
+    public function index2()
+    {
+        $this->Authorization->skipAuthorization();
+        $session = $this->request->getSession();
+        $session->destroy();
+    }
+
 
     public function test()
     {
@@ -1225,7 +1233,7 @@ class NouveaucompteController extends AppController
     {
         $this->Authorization->skipAuthorization();
         $this->viewBuilder()->setLayout('bdc');
-        $nvocomptes = $this->Nouveaucompte->find()->all();
+        $nvocomptes = $this->Nouveaucompte->find()->orderBy(['modified' => 'DESC']);
         $this->set('nvocomptes', $nvocomptes);
     }
 
