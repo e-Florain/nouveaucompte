@@ -1,5 +1,8 @@
 <!-- File: templates/payments/index.php -->
 <br>
+<div class="mb-3">
+    <input type="search" class="form-control" list="datalistOptions" id="search" placeholder="Chercher ...">
+</div>
 <h3>
     <div id='nbpayments'>Paiments (<?php echo $nbpayments; ?>)</div>
 </h3>
@@ -13,8 +16,8 @@
         </div>
     </div>
 </form>-->
-<div id="results">
-<table class="table-striped table">
+<div id="results"></div>
+<table class="table-striped table" id="table-payments">
     <tr>
         <th>Date</th>
         <th>Description</th>

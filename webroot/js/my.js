@@ -290,3 +290,8 @@
       return false;
     }
   }
+
+  $( '#table-customers' ).searchable();
+  $( '#table-mandates' ).searchable();
+  $( '#table-payments' ).searchable();
+  $( '#table-subscriptions' ).searchable();

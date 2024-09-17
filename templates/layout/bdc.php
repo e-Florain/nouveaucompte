@@ -116,6 +116,7 @@ $cakeDescription = 'Nouveaucompte';
         </div>
     </footer>
     <?= $this->Html->script('jquery-3.7.1.min'); ?>
+    <?= $this->Html->script('jquery.searchable'); ?>
     <?= $this->Html->script('bootstrap.bundle.min'); ?>
     <?= $this->Html->script('my'); ?>
 </body>

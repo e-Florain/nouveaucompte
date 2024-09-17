@@ -3,6 +3,9 @@
 <?php if ($role == "root") { ?>
     <h1><a class="btn-floating btn-large waves-effect waves-light btn-pink" href="/customers/add"><i class="bi bi-person-add"></i></a></h1>
 <?php } ?>
+<div class="mb-3">
+    <input type="search" class="form-control" list="datalistOptions" id="search" placeholder="Chercher ...">
+</div>
 <h3>
     <div id='nbcustomers'>Customers (<?php echo $nbcustomers; ?>)</div>
 </h3>
@@ -16,16 +19,15 @@
         </div>
     </div>
 </form>-->
-<div id="results">
-<table class="table-striped table">
-    <tr>
+<div id="results"></div>
+<table class="table-striped table" id="table-customers">
+    <tr class="position-sticky">
         <th>Id</th>
         <th>Nom</th>
         <th>Email</th>
         <th>Date</th>
         <th></th>
     </tr>
-
     <!-- Here is where we iterate through our $articles query object, printing out article info -->
 
     <?php foreach ($customers as $customer): ?>
