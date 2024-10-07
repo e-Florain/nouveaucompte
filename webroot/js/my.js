@@ -224,6 +224,56 @@
     }
   });
   
+  $( "#adhchoicemoncompte" ).change(function() {
+    var choice = $("#adhchoicemoncompte").val();
+    var montantadh = $("#montantadh").val();
+    console.log("montantadh "+montantadh);
+    console.log("adhchoicemoncompte "+choice);
+    if (choice == "annuel") {
+      if (montantadh == parseInt(montantadh, 10)) {
+        if (parseInt(montantadh) < 20) {
+          $("#montantadh").addClass("is-invalid");
+        } else {
+          $("#montantadh").removeClass("is-invalid");
+        }
+      }
+    }
+    if (choice == "mensuel") {
+      if (montantadh == parseInt(montantadh, 10)) {
+        if (parseInt(montantadh) < 6) {
+          $("#montantadh").addClass("is-invalid");
+        } else {
+          $("#montantadh").removeClass("is-invalid");
+        }
+      }
+    }
+  });
+
+  $( "#montantadh" ).change(function() {
+    var montantadh = $("#montantadh").val();
+    console.log("adhesion  "+montantadh+" "+parseInt(montantadh));
+    var choice = $("#adhchoicemoncompte").val();
+    console.log("adhchoicemoncompte "+choice);
+    if (choice == "annuel") {
+      if (montantadh == parseInt(montantadh, 10)) {
+        if (parseInt(montantadh) < 20) {
+          $("#montantadh").addClass("is-invalid");
+        } else {
+          $("#montantadh").removeClass("is-invalid");
+        }
+      }
+    }
+    if (choice == "mensuel") {
+      if (montantadh == parseInt(montantadh, 10)) {
+        if (parseInt(montantadh) < 6) {
+          $("#montantadh").addClass("is-invalid");
+        } else {
+          $("#montantadh").removeClass("is-invalid");
+        }
+      }
+    }
+  });
+
   //testFormAdh
   function testFormAdh() {
     console.log("testFormAdh");

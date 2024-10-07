@@ -535,7 +535,7 @@ class MollieTable extends Table
         return $infos;
     }
 
-    public function update_subscription($subscription, $customer, $amountvalue, $times)
+    /*public function update_subscription($subscription, $customer, $amountvalue, $times)
     {
         $http = new Client();
         $url = $this->mollie['url'] . "/customers/" . $customer . "/subscriptions/" . $subscription;
@@ -554,6 +554,37 @@ class MollieTable extends Table
         }
         $json = json_encode($datas);
 
+        $response = $http->post($url, $json, [
+            'headers' => [
+                'Authorization' => 'Bearer ' . $this->mollie['key'],
+                'Content-Type' => 'application/json'
+            ]
+        ]);
+        $infos = $response->getJson();
+        return $infos;
+    }*/
+
+    public function update_subscription($subscription, $customer, $amountvalue, $times, $interval=0)
+    {
+        $http = new Client();
+        $url = $this->mollie['url'] . "/customers/" . $customer . "/subscriptions/" . $subscription;
+        $found = false;
+        $amount = array(
+            "currency" => "EUR",
+            "value" => $amountvalue
+        );
+
+        $datas = array(
+            "amount" => $amount
+        );
+        if ($interval != 0) {
+            $datas["interval"] = $interval;
+        }
+        if (($times != "0") and (intval($times) != 0)) {
+            $datas["times"] = intval($times);
+        }
+        $json = json_encode($datas);
+        var_dump($datas);
         $response = $http->post($url, $json, [
             'headers' => [
                 'Authorization' => 'Bearer ' . $this->mollie['key'],

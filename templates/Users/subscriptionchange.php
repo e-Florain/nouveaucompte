@@ -1,5 +1,5 @@
 <br>
-<form method="post" action="/users/subscription/<?php echo $subid; ?>" onSubmit='return testForm();'>
+<form method="post" action="/users/subscriptionchange/<?php echo $subid; ?>" onSubmit='return testForm();'>
     <div class="form-floating col-sm-4">
         <input type="text" class="form-control" id="description" name="description" placeholder="Description" disabled value="<?php echo $description; ?>">
         <label for="floatingDescription">Description</label>

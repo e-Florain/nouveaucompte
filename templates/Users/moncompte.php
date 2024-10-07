@@ -33,7 +33,7 @@
 
         <tr>
             <td>
-                <?php echo '<a href="/users/subscription/'.$subid.'">'.$description.'</a>'; ?>
+                <?php echo '<a href="/users/subscriptionchange/'.$subid.'">'.$description.'</a>'; ?>
             </td>
             <td>
                 <?= $amount ?>
@@ -43,6 +43,33 @@
             </td>
             <td>
                 <?= $nextdate ?>
+            </td>
+        </tr>
+    </tbody>
+</table>
+<br>
+<h5>Modifier le montant de l'adhésion (par prélèvement)</h5>
+<table class="table">
+    <thead>
+        <th>Description</th>
+        <th>Montant</th>
+        <th>Type</th>
+        <th>Prochain prélèvement</th>
+    </thead>
+    <tbody>
+
+        <tr>
+            <td>
+                <?php echo '<a href="/users/subscriptionadh/'.$subid2.'">'.$description2.'</a>'; ?>
+            </td>
+            <td>
+                <?= $amount2 ?>
+            </td>
+            <td>
+                <?= $interval2 ?>
+            </td>
+            <td>
+                <?= $nextdate2 ?>
             </td>
         </tr>
     </tbody>

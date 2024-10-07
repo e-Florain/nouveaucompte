@@ -43,7 +43,7 @@
     }
     ?>
     <div class="row">
-        <div class='col-sm-5'><b>Souhaitez-vous un compte florain numérique ?</b></div>
+        <div class='col-sm-5' style="color: red"><b>Souhaitez-vous un compte florain numérique ?</b></div>
         &nbsp;&nbsp;
         <div class="col-sm-4 form-check">
             <input class="form-check-input" type="checkbox" value="" id="account_cyclos" name="account_cyclos">

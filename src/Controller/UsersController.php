@@ -257,6 +257,22 @@ class UsersController extends AppController
                     $this->set('nextdate', $newDate->format('d-m-Y'));
 
                 }
+                if (preg_match('/Adh/', $subscription['description'])) {
+                    $this->set('description2', $subscription['description']);
+                    $this->set('amount2', $subscription['amount']['value']);
+                    $this->set('subid2', $subscription['id']);
+                    if (preg_match("/(\d+)\s+(\w+)/", $subscription['interval'], $matches)) {
+                        if ($matches[2] == "days") {
+                            $interval = $matches[1] . " jours";
+                        } elseif ($matches[2] == "month") {
+                            $interval = $matches[1] . " mois";
+                        }
+                        $this->set('interval2', $interval);
+                    }
+                    $datetime = new DateTime();
+                    $newDate = $datetime->createFromFormat('Y-m-d', $subscription['nextPaymentDate']);
+                    $this->set('nextdate2', $newDate->format('d-m-Y'));
+                }
             }
         }
 
@@ -287,7 +303,7 @@ class UsersController extends AppController
         $this->set('mandateusr', $mandateusr);
     }
 
-    public function subscription($subid)
+    public function subscriptionchange($subid)
     {
         $session = $this->request->getSession();
         $email = $session->read('User.email');
@@ -321,6 +337,62 @@ class UsersController extends AppController
             $datas['email'] = $email;
             $datas['infos']['changeeuros'] = $amount;
             $florapi->updateAdh($datas);
+            $this->Flash->success(__('Le montant a été changé.'));
+            return $this->redirect(['action' => 'moncompte']);
+        }
+    }
+
+    public function subscriptionadh($subid)
+    {
+        $session = $this->request->getSession();
+        $email = $session->read('User.email');
+        $this->Authorization->skipAuthorization();
+        if (isset($role)) {
+            if ($role == "root") {
+                $this->viewBuilder()->setLayout('bdc');
+            } elseif ($role == "none") {
+                $this->viewBuilder()->setLayout('userstd');
+            } elseif ($role == "user") {
+                $this->viewBuilder()->setLayout('userstd');
+            }
+        } else {
+            $this->viewBuilder()->setLayout('userstd');
+        }
+        $mollie = $this->fetchTable('Mollie');
+        $florapi = $this->fetchTable('Florapi');
+        $customer = $mollie->get_customer($email);
+        $subscription = $mollie->get_subscription($customer[0]['id'], $subid);
+        //Debug($subscription);
+        if ($subscription['status'] == 404) {
+            return $this->redirect(['action' => 'moncompte']);
+        }
+
+        /*if (preg_match("/(\d+)\s+(\w+)/", $subscription['interval'], $matches)) {
+            if ($matches[2] == "days") {
+                $interval = $matches[1] . " jours";
+            } elseif ($matches[2] == "month") {
+                $interval = $matches[1] . " mois";
+            }
+            $this->set('interval', $interval);
+        }*/
+        $this->set('interval', $subscription['interval']);
+        $this->set('description', $subscription['description']);
+        $this->set('amount', $subscription['amount']['value']);
+        $this->set('subid', $subscription['id']);
+        if ($this->request->is('post')) {
+            $data = $this->request->getData();
+            //var_dump($data);
+            if ($data['adhchoicemoncompte'] == 'annuel') {
+                $interval = "365 days";
+            }
+            if ($data['adhchoicemoncompte'] == 'mensuel') {
+                $interval = "1 month";
+            }
+            $amount = strval(number_format(floatval($data['montantadh']), 2, '.', ''));
+            $infos = $mollie->update_subscription($subid, $customer[0]['id'], $amount, 0, $interval);
+            //var_dump($infos);
+            $datas['email'] = $email;
+            $datas['infos']['changeeuros'] = $amount;
             $this->Flash->success(__('Le montant a été changé.'));
             return $this->redirect(['action' => 'moncompte']);
         }
