@@ -78,8 +78,8 @@ $cakeDescription = 'Nouveaucompte';
     </header>
 
     <main class="flex-shrink-0">
-        <div class="container">
-            <div class="alertcb alert">test</div>
+        <div class="container"><br><br>
+            <div class="alertcb alert"></div>
             <?= $this->Flash->render() ?>
             <?= $this->fetch('content') ?>
         </div>
