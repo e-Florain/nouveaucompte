@@ -231,10 +231,15 @@
     console.log("adhchoicemoncompte "+choice);
     if (choice == "annuel") {
       if (montantadh == parseInt(montantadh, 10)) {
-        if (parseInt(montantadh) < 20) {
+        if (parseInt(montantadh) < 6) {
           $("#montantadh").addClass("is-invalid");
-        } else {
+          $("#liveAlertAdh").html('<div class="alert alert-primary" role="alert">Les cotisations des adhérent·e·s sont la principale ressource et la garantie de l’indépendance de notre association !</div>');
+        }
+        else if (parseInt(montantadh) < 24) {
           $("#montantadh").removeClass("is-invalid");
+          $("#liveAlertAdh").html('<div class="alert alert-primary" role="alert">Les cotisations des adhérent·e·s sont la principale ressource et la garantie de l’indépendance de notre association !</div>');
+        } else {
+          $("#liveAlertAdh").html('');
         }
       }
     }
@@ -256,10 +261,16 @@
     console.log("adhchoicemoncompte "+choice);
     if (choice == "annuel") {
       if (montantadh == parseInt(montantadh, 10)) {
-        if (parseInt(montantadh) < 20) {
+        if (parseInt(montantadh) < 6) {
           $("#montantadh").addClass("is-invalid");
-        } else {
+          $("#liveAlertAdh").html('<div class="alert alert-primary" role="alert">Les cotisations des adhérent·e·s sont la principale ressource et la garantie de l’indépendance de notre association !</div>');
+        }
+        else if (parseInt(montantadh) < 24) {
           $("#montantadh").removeClass("is-invalid");
+          $("#liveAlertAdh").html('<div class="alert alert-primary" role="alert">Les cotisations des adhérent·e·s sont la principale ressource et la garantie de l’indépendance de notre association !</div>');
+        } else {
+          $("#liveAlertAdh").html('');
+          //$("#montantadh").removeClass("is-invalid");
         }
       }
     }

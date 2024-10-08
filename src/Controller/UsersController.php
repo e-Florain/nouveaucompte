@@ -13,7 +13,7 @@ class UsersController extends AppController
     public function beforeFilter(\Cake\Event\EventInterface $event)
     {
         parent::beforeFilter($event);
-        $this->Authentication->allowUnauthenticated(['login', 'test']);
+        $this->Authentication->allowUnauthenticated(['login']);
 
     }
 
@@ -283,6 +283,7 @@ class UsersController extends AppController
         $adhs = $florapi->getAdh($email);
         $adh = $adhs[0];
         $assos = $florapi->getOdooAssos();
+        //var_dump($assos);
         foreach ($assos as $asso) {
             if ($asso['id'] == $adh['orga_choice']) {
                 $assoname = $asso['name'];
@@ -301,6 +302,24 @@ class UsersController extends AppController
             }
         }
         $this->set('mandateusr', $mandateusr);
+    }
+
+    public function changeasso()
+    {
+        $this->Authorization->skipAuthorization();
+        $session = $this->request->getSession();
+        $email = $session->read('User.email');
+        $florapi = $this->fetchTable('Florapi');
+        $assos = $florapi->getOdooAssos();
+        $this->set('assos', $assos);
+        if ($this->request->is('post')) {
+            $data = $this->request->getData();
+            $datas['email'] = $email;
+            $datas['infos']['orga_choice'] = $data['orgachoice'];
+            $florapi->updateAdh($datas);
+            $this->Flash->success(__('L\'association soutenue a été changée.'));
+            return $this->redirect(['action' => 'moncompte']);
+        }
     }
 
     public function subscriptionchange($subid)

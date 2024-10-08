@@ -130,7 +130,7 @@ class FlorapiTable extends Table
                 $assos[] = $info;
             }
         }
-        return $assos;
+        return $infos;
     }
 
     public function getFreeRef()

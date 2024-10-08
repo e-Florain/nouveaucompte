@@ -79,11 +79,19 @@
 <table class="table">
     <thead>
         <th>Nom</th>
+        <th></th>
     </thead>
     <tbody>
         <tr>
             <td>
-                <?= $assoname ?>
+                <?php if ($assoname == null) {
+                    echo "Aucune";
+                } else {
+                    echo $assoname;
+                } ?>
+            </td>
+            <td>
+            <?php echo '<a href="/users/changeasso">Changer l\'association soutenue</a>'; ?>
             </td>
         </tr>
     </tbody>

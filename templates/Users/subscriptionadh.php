@@ -1,10 +1,12 @@
 <br>
+<div id="liveAlertAdh"></div>
+
 <form method="post" action="/users/subscriptionadh/<?php echo $subid; ?>" onSubmit='return testForm();'>
     <div class="form-floating col-sm-4">
         <input type="text" class="form-control" id="description" name="description" placeholder="Description" disabled value="<?php echo $description; ?>">
         <label for="floatingDescription">Description</label>
     </div>
-    <div class="col-sm-4">
+    <div class="form-floating col-sm-4">
         <select id="adhchoicemoncompte" name="adhchoicemoncompte" class="form-select" required aria-label="Default select example">
             <option value="" disabled>Choix de l'adhésion</option>
             <option value="annuel"
