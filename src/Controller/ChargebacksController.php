@@ -45,29 +45,18 @@ class ChargebacksController extends AppController
             $this->set(compact('prevfrom'));
         }
         $list_payments = array();
-        $payments = $mollie->get_all_payments();
-        foreach ($payments as $payment) {
+        foreach ($list_chargebacks as $chargeback) {
+            $payment = $mollie->get_payment_by_id($chargeback['paymentId']);
             $list_payments[$payment['id']] = $payment;
         }
+        /*$payments = $mollie->get_all_payments();
+        foreach ($payments as $payment) {
+            $list_payments[$payment['id']] = $payment;
+        }*/
         $this->set(compact('list_payments'));
         $nbchargebacks = count($list_chargebacks);
         $this->set(compact('nbchargebacks'));
         $this->set(compact('list_chargebacks'));
         $this->set(compact('list_customers'));
     }
-
-    /*public function onepercent()
-    {
-        $mollie = $this->fetchTable('Mollie');
-        $adh = $this->fetchTable('Adhesions');
-        //$res = $mollie->onepercent();
-        $listpaymentsbyassos = $mollie->onepercent();
-        $assos = $adh->getOdooAssos();
-        $listassos = array();
-        foreach ($assos as $asso) {
-            $listassos[$asso['id']] = $asso['name'];
-        }
-        $this->set(compact('listpaymentsbyassos'));
-        $this->set(compact('listassos'));
-    }*/
 }

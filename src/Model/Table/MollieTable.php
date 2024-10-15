@@ -434,6 +434,21 @@ class MollieTable extends Table
         }
         return false;
     }
+
+    public function get_payment_by_id($idPayment)
+    {
+        $http = new Client();
+        $url = $this->mollie['url'] . '/payments/'.$idPayment;
+        $response = $http->get($url, [], [
+            'headers' => [
+                'Authorization' => 'Bearer ' . $this->mollie['key'],
+                'Content-Type' => 'application/json'
+            ]
+        ]);
+        $payment = $response->getJson();
+        return $payment;
+    }
+
     public function get_status_payment($order_id)
     {
         $payment = $this->get_payment($order_id);

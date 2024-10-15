@@ -561,6 +561,7 @@ class UsersController extends AppController
             $this->viewBuilder()->setLayout('userstd');
         }
         $payment_status = $mollie->get_status_payment($order_id);
+        //Debug($payment_status);
         if ($payment_status == "paid") {
             /*echo '<div class="row"><div class="col s10 offset-s2">';
             echo "<h4>Merci votre compte Florain numérique sera crédité sous les 24h (jours ouvrables)</h4>";
