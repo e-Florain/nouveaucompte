@@ -56,28 +56,31 @@ $cakeDescription = 'Nouveaucompte';
                 <div class="collapse navbar-collapse" id="navbarCollapse">
                     <ul class="navbar-nav">
                         <li class="nav-item">
-                        <a class="nav-link" href="/dashboard">DASHBOARD</a>
+                        <a class="nav-link <?php echo ($this->request->getParam('controller')=='Dashboard')?'active' :'inactive'; ?>" href="/dashboard">DASHBOARD</a>
                         </li>
                         <li class="nav-item">
-                        <a class="nav-link active" aria-current="page" href="/nouveaucompte/list">LISTE DES DEMANDES</a>
+                        <a class="nav-link <?php echo ($this->request->getParam('controller')=='Nouveaucompte')?'active' :'inactive'; ?>" aria-current="page" href="/nouveaucompte/list">LISTE DES DEMANDES</a>
                         </li>
                         <li class="nav-item">
-                        <a class="nav-link" href="/users/moncompte" onclick="waiting();">MONCOMPTE</a>
+                        <a class="nav-link <?php echo ($this->request->getParam('controller')=='Users')?'active' :'inactive'; ?>" href="/users/moncompte" onclick="waiting();">MONCOMPTE</a>
                         </li>
                         <li class="nav-item">
-                        <a class="nav-link" href="/customers" onclick="waiting();">CLIENTS</a>
+                        <a class="nav-link <?php echo ($this->request->getParam('controller')=='Customers')?'active' :'inactive'; ?>" href="/customers" onclick="waiting();">CLIENTS</a>
                         </li>
                         <li class="nav-item">
-                        <a class="nav-link" href="/payments" onclick="waiting();">PAIEMENTS</a>
+                        <a class="nav-link <?php echo ($this->request->getParam('controller')=='Payments')?'active' :'inactive'; ?>" href="/payments" onclick="waiting();">PAIEMENTS</a>
                         </li>
                         <li class="nav-item">
-                        <a class="nav-link" href="/mandates" onclick="waiting();">MANDATS</a>
+                        <a class="nav-link <?php echo ($this->request->getParam('controller')=='Mandates')?'active' :'inactive'; ?>" href="/mandates" onclick="waiting();">MANDATS</a>
                         </li>
                         <li class="nav-item">
-                        <a class="nav-link" href="/subscriptions" onclick="waiting();">PRELEVEMENTS</a>
+                        <a class="nav-link <?php echo ($this->request->getParam('controller')=='Subscriptions')?'active' :'inactive'; ?>" href="/subscriptions" onclick="waiting();">PRELEVEMENTS</a>
                         </li>
                         <li class="nav-item">
-                        <a class="nav-link" href="/chargebacks" onclick="waiting();">CHARGEBACKS</a>
+                        <a class="nav-link <?php echo ($this->request->getParam('controller')=='Chargebacks')?'active' :'inactive'; ?>" href="/chargebacks" onclick="waiting();">CHARGEBACKS</a>
+                        </li>
+                        <li class="nav-item">
+                        <a class="nav-link <?php echo ($this->request->getParam('controller')=='CyclosSubscriptions')?'active' :'inactive'; ?>" href="/cyclossubscriptions" onclick="waiting();">PRELEVEMENTS CYCLOS</a>
                         </li>
                     </ul>
                 </div>

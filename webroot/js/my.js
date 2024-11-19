@@ -352,6 +352,15 @@
     }
   }
 
+  function delete_sub() {
+    let text = "Etes-vous sur de vouloir effacer ce prélèvement ?";
+    if (confirm(text) == true) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
   $( '#table-customers' ).searchable();
   $( '#table-mandates' ).searchable();
   $( '#table-payments' ).searchable();
