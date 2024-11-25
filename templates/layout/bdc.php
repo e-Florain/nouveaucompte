@@ -33,6 +33,7 @@ $cakeDescription = 'Nouveaucompte';
     <?= $this->Html->css('my.css') ?>
     <?= $this->Html->css('bdc.css'); ?>
     <?= $this->Html->css('bootstrap-icons.min.css'); ?>
+    <?= $this->Html->css('bootstrap-datepicker.min'); ?>
     <?= $this->fetch('meta') ?>
     <?= $this->fetch('css') ?>
     <?= $this->fetch('script') ?>
@@ -121,6 +122,7 @@ $cakeDescription = 'Nouveaucompte';
     <?= $this->Html->script('jquery-3.7.1.min'); ?>
     <?= $this->Html->script('jquery.searchable'); ?>
     <?= $this->Html->script('bootstrap.bundle.min'); ?>
+    <?= $this->Html->script('bootstrap-datepicker.min'); ?>
     <?= $this->Html->script('my'); ?>
 </body>
 

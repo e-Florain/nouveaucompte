@@ -25,7 +25,7 @@
     </tr>
 
     <!-- Here is where we iterate through our $articles query object, printing out article info -->
-
+    
     <?php foreach ($subscriptions as $subscription): ?>
     <tr>
         <td>
@@ -50,6 +50,7 @@
             <?php echo $subscription['nextpaymentdate']; ?>
         </td>
         <td>
+            <?php echo '<a href="/cyclossubscriptions/view/'.$subscription['id'].'"><i class="bi bi-eye"></i></a>'; ?>
             <?php echo '<a href="/cyclossubscriptions/edit/'.$subscription['id'].'"><i class="bi bi-pen"></i></a>'; ?>
             <?php echo '<a href="/cyclossubscriptions/delete/'.$subscription['id'].'" onclick="return delete_sub();"><i class="bi bi-trash"></i></a>'; ?>
         </td>

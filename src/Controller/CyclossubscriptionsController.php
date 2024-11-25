@@ -26,13 +26,15 @@ class CyclossubscriptionsController extends AppController
         $sort = $this->request->getQuery('sort') ?? "ASC";
         $subscriptions = $this->Cyclossubscriptions->find()->order([$order => $sort]);
         foreach ($subscriptions as $sub) {
-            $startdate = new DateTime($sub['startdate']);
-            $sub['startdate'] = $startdate->i18nFormat('yyyy-MM-dd');
-            $nextpaymentdate = new DateTime($sub['nextpaymentdate']);
-            $sub['nextpaymentdate'] = $nextpaymentdate->i18nFormat('yyyy-MM-dd');
+            if ($sub['startdate'] != NULL) {
+                $startdate = new DateTime($sub['startdate']);
+                $sub['startdate'] = $startdate->i18nFormat('yyyy-MM-dd');   
+            }
+            if ($sub['nextpaymentdate'] != NULL) {
+                $nextpaymentdate = new DateTime($sub['nextpaymentdate']);
+                $sub['nextpaymentdate'] = $nextpaymentdate->i18nFormat('yyyy-MM-dd');
+            }
         }
-        
-        //echo 
         $this->set(compact('subscriptions'));
         $nbsubscriptions = $this->Cyclossubscriptions->find()->count();
         $this->set('nbsubscriptions', $nbsubscriptions);
@@ -93,6 +95,8 @@ class CyclossubscriptionsController extends AppController
         $pros = $cyclos->getUsers('professionnels');
         $this->set(compact('pros'));
         $sub = $this->Cyclossubscriptions->get($subid);
+        $startdate = new DateTime($sub['startdate']);
+        $sub['startdate'] = $startdate->i18nFormat('yyyy-MM-dd'); 
         $this->set(compact('sub'));
         if ($this->request->is('post')) {
             $data = $this->request->getData();
@@ -104,5 +108,27 @@ class CyclossubscriptionsController extends AppController
             }
             $this->Flash->error(__('Erreur : Impossible de modifier le prélèvement.'));
         }
+    }
+
+    public function view($subid)
+    {
+        $this->Authorization->skipAuthorization();
+        $this->viewBuilder()->setLayout('bdc');
+        $cyclos = $this->fetchTable('Cyclos');
+        $pros = $cyclos->getUsers('professionnels');
+        $this->set(compact('pros'));
+        $subscription = $this->Cyclossubscriptions->get($subid);
+        $startdate = new DateTime($subscription['startdate']);
+        $subscription['startdate'] = $startdate->i18nFormat('yyyy-MM-dd'); 
+        $this->set(compact('subscription'));
+        $transactions = array();
+        $results = $cyclos->searchPayments($subscription['account_cyclos_src'], $subscription['account_cyclos_dst'], $subscription['description']);
+        foreach ($results as $result) {
+            $datetransac = new DateTime($result['date']);
+            $transaction = $result;
+            $transaction['date'] = $datetransac->i18nFormat('yyyy-MM-dd hh:mm');
+            $transactions[] = $transaction;
+        }
+        $this->set(compact('transactions'));
     }
 }

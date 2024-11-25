@@ -64,7 +64,7 @@
       <div class="mb-3 row">
         <div class="col-sm-4">
           <label for="startdate" class="form-label">Début du prélèvement</label>
-          <input name="startdate" value="<?php echo $sub->startdate; ?>" type="text" id="startdate" required class="form-control datepicker" placeholder="Début du prélèvement">
+          <input  id='datepicker1' name="startdate" value="<?php echo $sub->startdate; ?>" type="text" id="startdate" required class="form-control datepicker" placeholder="Début du prélèvement">
         </div>
       </div>
       <div class="mb-3 row">

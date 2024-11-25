@@ -365,3 +365,11 @@
   $( '#table-mandates' ).searchable();
   $( '#table-payments' ).searchable();
   $( '#table-subscriptions' ).searchable();
+
+  $(function () {
+    $('#datepicker1').datepicker(
+      {
+        format: 'yyyy-mm-dd'
+      }
+    );
+});
