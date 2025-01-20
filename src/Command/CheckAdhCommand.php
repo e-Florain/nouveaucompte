@@ -19,7 +19,7 @@ class CheckAdhCommand extends Command
             if ($adh['account_cyclos']) {
                 if (!in_array($adh['email'], $exception_accounts)) {
                     if (!$this->checkMollie($adh['email'])) {
-                        $datas[] = $adh['email'];
+                        $datas[] = $adh['email']." ".$adh['lastname']." ".$adh['firstname'];
                     }
                 }
             }

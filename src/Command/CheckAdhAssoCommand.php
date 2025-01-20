@@ -33,8 +33,13 @@ class CheckAdhAssoCommand extends Command
         foreach ($alladhs as $adh) {
             if (!array_key_exists($adh['orga_choice'], $data_assos)) {
                 $contact = trim($adh['email']);
-                echo $adh['lastname']." ".$adh['firstname']." ".$contact." ".$adh['orga_choice']."\n";
-                //$this->sendEmail($contact, $datas);
+                if ($adh['account_cyclos']) {
+                    echo "Avec compte cyclos\n";
+                    echo $adh['lastname']." ".$adh['firstname']." ".$contact." ".$adh['orga_choice']."\n";
+                    //$this->sendEmailCompteCyclos($contact, $datas);
+                } else {
+                    echo "Sans compte cyclos\n";
+                }
                 $nb++;
             }
         }
@@ -42,7 +47,7 @@ class CheckAdhAssoCommand extends Command
         return static::CODE_SUCCESS;
     }
 
-    public function sendEmail($to, $datas)
+    public function sendEmailCompteCyclos($to, $datas)
     {
         $mailer = new Mailer();
         $mailer
