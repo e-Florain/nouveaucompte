@@ -496,7 +496,7 @@ class NouveaucompteController extends AppController
             case 'application/pdf':
                 //$targetpath = $path_parts['dirname'].'/'.$path_parts['filename']."-masque.".$path_parts['extension'];
                 $cmd = 'pdftk "'.$imageURL.'" stamp '.WWW_ROOT.'img/stamp.pdf output "'.$targetpath.'"';
-                Debug($cmd);
+                //Debug($cmd);
                 //echo $cmd."\n";
                 shell_exec($cmd);
                 unlink($imageURL);
@@ -562,6 +562,7 @@ class NouveaucompteController extends AppController
             $this->log("dirname : " . $dirname . " tmp_name : " . $_FILES['uploadedFile']['tmp_name'] . " name : " . $_FILES['uploadedFile']['name'], 'debug');
             $res = $mindee->checkIdentity($_FILES['uploadedFile']['tmp_name'], $nvocompte->lastname, $nvocompte->firstname);
             $this->set('res', $res);
+            //Debug($res);
             $newpath = $this->addwatermark($_FILES['uploadedFile']['name'], $_FILES['uploadedFile']['tmp_name']);
             //$nextcloud->uploadFile($dirname, $_FILES['uploadedFile']['tmp_name'], $_FILES['uploadedFile']['name']);
             $path_parts = pathinfo($newpath);

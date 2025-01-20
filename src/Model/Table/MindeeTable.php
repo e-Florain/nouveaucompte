@@ -26,8 +26,8 @@ class MindeeTable extends Table
     public function checkIdorPassport($file)
     {
         $results = array();
-
         $res = $this->checkIDCard($file);
+        //Debug($res);
         if ($res['api_request']['status'] == 'failure') {
             $results['result'] = False;
             $results['error'] = 'Document invalide';
@@ -76,6 +76,9 @@ class MindeeTable extends Table
             if (preg_match('/Epouse\s+(.*)/', $epouseName, $matches)) {
                 $usageName = $matches[1];
                 $regex .= $matches[1];
+            } elseif (preg_match('/ép\s+(.*)/', $epouseName, $matches)) {
+                $usageName = $matches[1];
+                $regex .= $matches[1];
             }
         }
         if ($res['document']['inference']['prediction']['surname']['value'] != NULL) {
@@ -88,13 +91,20 @@ class MindeeTable extends Table
         }
         if (isset($res['document']['inference']['prediction']['given_names'][0])) {
             if ($res['document']['inference']['prediction']['given_names'][0]['value'] != NULL) {
-                $regex .= "\s+" . $res['document']['inference']['prediction']['given_names'][0]['value'];
+                $firstname = $res['document']['inference']['prediction']['given_names'][0]['value'];
+                if (substr($firstname, -1) == ",") {
+                    $regex .= "\s+" . substr_replace($firstname, '', -1);
+                } else {
+                    $regex .= "\s+" . $firstname;
+                }
+                
             }
         }
         $regex .= "/i";
         if ($res['document']['inference']['prediction']['birth_date']['value'] != NULL) {
             $results['birth_date'] = $res['document']['inference']['prediction']['birth_date']['value'];
         }
+        //Debug($regex."/".$lastname." ".$firstname);
         if (preg_match($regex, $lastname . " " . $firstname)) {
             $results['result'] = True;
         } else {
