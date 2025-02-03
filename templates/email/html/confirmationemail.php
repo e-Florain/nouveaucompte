@@ -8,7 +8,7 @@ continuer la procédure de création.
 <br /> <a href="<?php echo $this->Url->build([
     'controller' => 'nouveaucompte',
     'action' => 'get',
-    '?' => ['uuid'=> $uuid]],
+    '?' => ['uuid'=> $uuid, 'account_cyclos' => $account_cyclos]],
     ['fullBase' => true]
 ); ?>"> Activer mon compte Florain </a>
 <br /> Si vous n'êtes pas l'origine de cette demande, veuillez ignorer ce message.

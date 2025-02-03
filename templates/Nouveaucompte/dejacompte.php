@@ -7,7 +7,7 @@
     </h4>
 </div>
 
-<form class="col-sm-6" method="post" action="/nouveaucompte/confirmationemail" enctype="multipart/form-data">
+<form class="col-sm-6" method="post" action="/nouveaucompte/confirmationemail/account_cyclos/true" enctype="multipart/form-data">
     <div class="row">
         <div class="col-sm-6">
             <div class="mb-3">

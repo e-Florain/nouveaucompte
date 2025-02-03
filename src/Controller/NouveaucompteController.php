@@ -122,6 +122,9 @@ class NouveaucompteController extends AppController
         if (isset($parameters['?']['uuid'])) {
             $uuid = $parameters['?']['uuid'];
         }
+        if (isset($parameters['?']['account_cyclos'])) {
+            $account_cyclos = $parameters['?']['account_cyclos'];
+        }
         $session = $this->request->getSession();
         $this->set('translates', $this->translates);
         $florapi = $this->fetchTable('Florapi');
@@ -182,6 +185,7 @@ class NouveaucompteController extends AppController
         if ($data['membership_stop'] != null) {
             $data['membership_stop'] = $expirdate->format("Y-m-d H:i:s");
         }
+        $this->set('account_cyclos', $account_cyclos);
         $this->update($uuid, $data);
         $this->log('get '.$uuid, 'debug');
         return;
@@ -226,7 +230,7 @@ class NouveaucompteController extends AppController
     /*
      *  va chercher les infos de l'adhérent et vérifie que c'est bien lui (par mail)
      */
-    public function confirmationemail($email = "")
+    public function confirmationemail($email = "", $account_cyclos=False)
     {
         $this->Authorization->skipAuthorization();
         $florapi = $this->fetchTable('Florapi');
@@ -244,7 +248,8 @@ class NouveaucompteController extends AppController
                             'uuid' => $uuid,
                             'lastname' => $adh[0]['lastname'],
                             'firstname' => $adh[0]['firstname'],
-                            'email' => $data['email']
+                            'email' => $data['email'],
+                            'account_cyclos' => $account_cyclos
                         );
                         $this->sendconfirmationmail($subject, $datas['email'], $datas);
                         $this->add($datas);
@@ -273,7 +278,8 @@ class NouveaucompteController extends AppController
                             'uuid' => $uuid,
                             'lastname' => $adh[0]['lastname'],
                             'firstname' => $adh[0]['firstname'],
-                            'email' => $email
+                            'email' => $email,
+                            'account_cyclos' => $account_cyclos
                         );
                         $this->sendconfirmationmail($subject, $email, $datas);
                         $this->add($datas);
