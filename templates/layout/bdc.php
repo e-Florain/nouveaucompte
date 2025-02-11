@@ -48,12 +48,12 @@ $cakeDescription = 'Nouveaucompte';
             <div class="spinner-border invisible" role="status">
                 <span class="visually-hidden">Loading...</span>
             </div>
-
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
             <img src="/img/logo-monnaie.svg" height="64"><a href="/nouveaucompte" class="brand-logo">Florain</a>
             <div class="container-fluid">
-                <!--<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-        </button>-->
+                
                 <div class="collapse navbar-collapse" id="navbarCollapse">
                     <ul class="navbar-nav">
                         <li class="nav-item">
