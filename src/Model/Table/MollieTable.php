@@ -616,8 +616,8 @@ class MollieTable extends Table
         $url = $this->mollie['url'] . "/customers/" . $customer . "/subscriptions/" . $subscription;
         $response = $http->delete($url, [], [
             'headers' => [
-                'Authorization' => 'Bearer ' . $this->mollie['key'],
-                'Content-Type' => 'application/json'
+                'Authorization' => 'Bearer ' . $this->mollie['key']
+                //'Content-Type' => 'application/json'
             ]
         ]);
         $infos = $response->getJson();
