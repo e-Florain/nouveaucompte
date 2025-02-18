@@ -142,6 +142,16 @@ class UsersController extends AppController
     public function add()
     {
         $this->Authorization->skipAuthorization();
+        $session = $this->request->getSession();
+        $email = $session->read('User.email');
+        if (!isset($email)) {
+            return $this->redirect(['action' => 'logout']);
+        }
+        $role = $this->Users->getRole($email);
+        if (($role != "root") or ($role == "admin")) {
+            $this->Flash->error(__('Vous n\'êtes pas autorisé à accéder à cette page'));
+            return $this->redirect(['controller' => 'Users', 'action' => 'moncompte']);
+        }
         $this->set('list_roles', $this->list_roles);
         $user = $this->Users->newEmptyEntity();
         if ($this->request->is('post')) {
@@ -158,6 +168,17 @@ class UsersController extends AppController
 
     public function edit($id)
     {
+        $this->Authorization->skipAuthorization();
+        $session = $this->request->getSession();
+        $email = $session->read('User.email');
+        if (!isset($email)) {
+            return $this->redirect(['action' => 'logout']);
+        }
+        $role = $this->Users->getRole($email);
+        if (($role != "root") or ($role == "admin")) {
+            $this->Flash->error(__('Vous n\'êtes pas autorisé à accéder à cette page'));
+            return $this->redirect(['controller' => 'Users', 'action' => 'moncompte']);
+        }
         $user = $this->Users->get($id);
         $this->set('list_roles', $this->list_roles);
         $this->set(compact('user'));
@@ -181,6 +202,17 @@ class UsersController extends AppController
 
     public function delete($id)
     {
+        $this->Authorization->skipAuthorization();
+        $session = $this->request->getSession();
+        $email = $session->read('User.email');
+        if (!isset($email)) {
+            return $this->redirect(['action' => 'logout']);
+        }
+        $role = $this->Users->getRole($email);
+        if (($role != "root") or ($role == "admin")) {
+            $this->Flash->error(__('Vous n\'êtes pas autorisé à accéder à cette page'));
+            return $this->redirect(['controller' => 'Users', 'action' => 'moncompte']);
+        }
         $user = $this->Users->get($id);
         $result = $this->Users->delete($user);
         $this->Flash->success(__('L\'utilisateur a été effacé.'));
@@ -189,6 +221,17 @@ class UsersController extends AppController
 
     public function resetPassword($id)
     {
+        $this->Authorization->skipAuthorization();
+        $session = $this->request->getSession();
+        $email = $session->read('User.email');
+        if (!isset($email)) {
+            return $this->redirect(['action' => 'logout']);
+        }
+        $role = $this->Users->getRole($email);
+        if (($role != "root") or ($role == "admin")) {
+            $this->Flash->error(__('Vous n\'êtes pas autorisé à accéder à cette page'));
+            return $this->redirect(['controller' => 'Users', 'action' => 'moncompte']);
+        }
         $user = $this->Users->get($id);
         if ($this->request->is('post')) {
             $user = $this->Users->patchEntity($user, $this->request->getData());
@@ -574,6 +617,21 @@ class UsersController extends AppController
             echo "<h4>Désolé le paiement a échoué, merci de réessayer plus tard</h4>";
             echo '</div>';
         }*/
+    }
+
+    public function importCi()
+    {
+        $this->Authorization->skipAuthorization();
+        $session = $this->request->getSession();
+        $email = $session->read('User.email');
+        if (!isset($email)) {
+            return $this->redirect(['action' => 'logout']);
+        }
+        $role = $this->Users->getRole($email);
+        if (($role != "root") or ($role == "admin")) {
+            $this->Flash->error(__('Vous n\'êtes pas autorisé à accéder à cette page'));
+            return $this->redirect(['controller' => 'Users', 'action' => 'moncompte']);
+        }
     }
 
     public function sendEmailOtp($to, $datas)
