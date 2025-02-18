@@ -632,6 +632,26 @@ class UsersController extends AppController
             $this->Flash->error(__('Vous n\'êtes pas autorisé à accéder à cette page'));
             return $this->redirect(['controller' => 'Users', 'action' => 'moncompte']);
         }
+        if ($this->request->is('post')) {
+            $mindee = $this->fetchTable('Mindee');
+            $nextcloud = $this->fetchTable('Nextcloud');
+            $res = $mindee->checkIdorPassport($_FILES['uploadedFile']['tmp_name']);
+            Debug($res);
+            if ($res['api_request']['status'] == 'success') {
+                $dirname = $res['document']['inference']['prediction']['surname']['value'];
+                $dirname .= "-".$res['document']['inference']['prediction']['given_names'][0]['value'];
+                $newpath = $nextcloud->addwatermark($_FILES['uploadedFile']['name'], $_FILES['uploadedFile']['tmp_name']);
+                //$nextcloud->uploadFile($dirname, $_FILES['uploadedFile']['tmp_name'], $_FILES['uploadedFile']['name']);
+                $path_parts = pathinfo($newpath);
+                if (!$nextcloud->isFolderExist($dirname)) {
+                    $infos = $nextcloud->createFolder($dirname);
+                    $this->log('create folder to nextcloud', 'debug');
+                }
+                $nextcloud->uploadFile($dirname, $newpath, $path_parts['filename'].'.'.$path_parts['extension']);
+            } else {
+                return $this->redirect(['controller' => 'Users', 'action' => 'importCi']);
+            }
+        }
     }
 
     public function sendEmailOtp($to, $datas)

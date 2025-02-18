@@ -85,9 +85,16 @@ $cakeDescription = 'Nouveaucompte';
                         </li>
                     </ul>
                 </div>
-                <ul class="navbar-nav me-auto mb-1 mb-lg-0">
-                    <li class="nav-item"><a href="/users">Utilisateurs</a></li>
-                </ul>
+
+                <div class="btn-group" role="group">
+                    <button type="button" class="btn dropdown-toggle" data-bs-toggle="dropdown"
+                        aria-expanded="false">Paramètres</button>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" href="/users">Utilisateurs</a></li>
+                        <li><a class="dropdown-item" href="/users/import_ci">Importer une CI</a></li>
+                    </ul>
+                </div>
+
                 <div class="btn-group" role="group">
                     <button type="button" class="btn dropdown-toggle" data-bs-toggle="dropdown"
                         aria-expanded="false">

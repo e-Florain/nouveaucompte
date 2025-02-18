@@ -116,4 +116,81 @@ class NextcloudTable extends Table
             curl_close($ch);
         }
     }
+
+    public function findgoodsize($hyp, $WaterMarkText)
+    {
+        $fontsize=10;
+        list($lefttext,, $righttext) = imageftbbox( $fontsize, 0, WWW_ROOT.'font/Steelfish.ttf', $WaterMarkText);
+        $widthtext = $righttext - $lefttext;
+        $percent = $widthtext/$hyp;
+        while ($percent < 0.75) {
+            $fontsize+=10;
+            list($lefttext,, $righttext) = imageftbbox( $fontsize, 0, WWW_ROOT.'font/Steelfish.ttf', $WaterMarkText);
+            $widthtext = $righttext - $lefttext;
+            $percent = $widthtext/$hyp;
+        }
+        return $fontsize;
+    }
+
+    /*
+     * Ajouter un filigrane sur les pieces d'identité
+     */
+    public function addwatermark($imageName, $imageURL)
+    {
+        //Debug($imageURL);
+        $path_parts = pathinfo($imageName);
+        $targetpath = '/tmp/'.$path_parts['filename']."-masque.".$path_parts['extension'];
+        $mimetype = mime_content_type($imageURL);        
+        switch($mimetype){ 
+            case 'image/jpeg': 
+                list ($width, $height) = getimagesize($imageURL);
+                $hyp = sqrt(pow($width,2) + pow($height,2));
+                $imageProperties = imagecreatetruecolor($width, $height);
+                $targetLayer = imagecreatefromjpeg($imageURL);
+                $anglerad = atan($width/$height);
+                $angle = 90-($anglerad*180/pi());
+                $WaterMarkText = 'CONFIDENTIEL - UNIQUEMENT POUR LE FLORAIN';
+                $fontsize = $this->findgoodsize($hyp, $WaterMarkText);
+                imagecopyresampled($imageProperties, $targetLayer, 0, 0, 0, 0, $width, $height, $width, $height);
+                $watermarkColor = imagecolorallocate($imageProperties, 0, 0, 0);
+                imagettftext($imageProperties, $fontsize, $angle, imagesx($imageProperties)/10, imagesy($imageProperties)-imagesy($imageProperties)/10, $watermarkColor, WWW_ROOT.'font/Steelfish.ttf', $WaterMarkText);
+                imagepng($imageProperties, $targetpath);
+                imagedestroy($targetLayer);
+                imagedestroy($imageProperties);
+                break; 
+            case 'image/png':
+                list ($width, $height) = getimagesize($imageURL);
+                $hyp = sqrt(pow($width,2) + pow($height,2));
+                $imageProperties = imagecreatetruecolor($width, $height);
+                $targetLayer = imagecreatefrompng($imageURL);
+                $anglerad = atan($width/$height);
+                $angle = 90-($anglerad*180/pi());
+                $WaterMarkText = 'CONFIDENTIEL - UNIQUEMENT POUR LE FLORAIN';
+                $fontsize = $this->findgoodsize($hyp, $WaterMarkText);
+                imagecopyresampled($imageProperties, $targetLayer, 0, 0, 0, 0, $width, $height, $width, $height);
+                $watermarkColor = imagecolorallocate($imageProperties, 0, 0, 0);
+                imagettftext($imageProperties, $fontsize, $angle, imagesx($imageProperties)/10, imagesy($imageProperties)-imagesy($imageProperties)/10, $watermarkColor, WWW_ROOT.'font/Steelfish.ttf', $WaterMarkText);
+                imagepng($imageProperties, $targetpath);
+                imagedestroy($targetLayer);
+                imagedestroy($imageProperties);
+                break;
+            case 'application/pdf':
+                //$targetpath = $path_parts['dirname'].'/'.$path_parts['filename']."-masque.".$path_parts['extension'];
+                $cmd = 'pdftk "'.$imageURL.'" stamp '.WWW_ROOT.'img/stamp.pdf output "'.$targetpath.'"';
+                //Debug($cmd);
+                //echo $cmd."\n";
+                shell_exec($cmd);
+                unlink($imageURL);
+                break;            
+            default:
+                if (($path_parts['extension'] == "jpg") or ($path_parts['extension'] == "jpeg")) {
+                    $targetLayer = imagecreatefromjpeg($imageURL);
+                }
+                if ($path_parts['extension'] == "png") {
+                    $targetLayer = imagecreatefrompng($imageURL);
+                }
+        }
+        //Debug($targetpath);
+        return $targetpath;
+    }
 }
