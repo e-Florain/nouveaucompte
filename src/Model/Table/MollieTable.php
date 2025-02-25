@@ -229,7 +229,8 @@ class MollieTable extends Table
             'headers' => [
                 'Authorization' => 'Bearer ' . $this->mollie['key'],
                 'Content-Type' => 'application/json'
-            ]
+            ],
+            'timeout' => 6000
         ]);
         $infos = $response->getJson();
         return $infos;
