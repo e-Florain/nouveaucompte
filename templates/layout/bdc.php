@@ -83,6 +83,9 @@ $cakeDescription = 'Nouveaucompte';
                         <li class="nav-item">
                         <a class="nav-link <?php echo ($this->request->getParam('controller')=='CyclosSubscriptions')?'active' :'inactive'; ?>" href="/cyclossubscriptions" onclick="waiting();">PRELEVEMENTS CYCLOS</a>
                         </li>
+                        <li class="nav-item">
+                        <a class="nav-link <?php echo ($this->request->getParam('controller')=='AdhesionsHA')?'active' :'inactive'; ?>" href="/AdhesionsHA" onclick="waiting();">ADH HA</a>
+                        </li>
                     </ul>
                 </div>
 
