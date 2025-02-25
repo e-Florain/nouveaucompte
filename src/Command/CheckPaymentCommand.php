@@ -59,14 +59,15 @@ class CheckPaymentCommand extends Command
         }
 
         foreach ($subs as $sub) {
-            if (($sub['status'] == 'active') and ($sub['description'] == 'PRO adhésion annuelle')) {
+            //if (($sub['status'] == 'active') and ($sub['description'] == 'PRO adhésion annuelle')) {
+            if (($sub['status'] == 'active') and (preg_match('/PRO adhésion annuel/', $sub['description']))) {
                 if ($sub['nextPaymentDate'] == $datein1monthstr) {
                     $customer = $mollie->get_customer_by_id($sub['customerId']);
                     $RECIPIENT_EMAIL=$customer['email'];
                     $datas['date'] = $nextdatestr;
                     $datas['name'] = $customer['name'];
                     $datas['amount'] = $sub["amount"]["value"];
-                    //Debug($datas);
+                    Debug($datas);
                     $this->sendEmailProFuturPayment($RECIPIENT_EMAIL, $sub['description'], $datas);
                 }
             }
