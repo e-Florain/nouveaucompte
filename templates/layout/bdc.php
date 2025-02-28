@@ -65,27 +65,34 @@ $cakeDescription = 'Nouveaucompte';
                         <li class="nav-item">
                         <a class="nav-link <?php echo ($this->request->getParam('controller')=='Users')?'active' :'inactive'; ?>" href="/users/moncompte" onclick="waiting();">MONCOMPTE</a>
                         </li>
-                        <li class="nav-item">
-                        <a class="nav-link <?php echo ($this->request->getParam('controller')=='Customers')?'active' :'inactive'; ?>" href="/customers" onclick="waiting();">CLIENTS</a>
-                        </li>
-                        <li class="nav-item">
-                        <a class="nav-link <?php echo ($this->request->getParam('controller')=='Payments')?'active' :'inactive'; ?>" href="/payments" onclick="waiting();">PAIEMENTS</a>
-                        </li>
-                        <li class="nav-item">
-                        <a class="nav-link <?php echo ($this->request->getParam('controller')=='Mandates')?'active' :'inactive'; ?>" href="/mandates" onclick="waiting();">MANDATS</a>
-                        </li>
-                        <li class="nav-item">
-                        <a class="nav-link <?php echo ($this->request->getParam('controller')=='Subscriptions')?'active' :'inactive'; ?>" href="/subscriptions" onclick="waiting();">PRELEVEMENTS</a>
-                        </li>
-                        <li class="nav-item">
-                        <a class="nav-link <?php echo ($this->request->getParam('controller')=='Chargebacks')?'active' :'inactive'; ?>" href="/chargebacks" onclick="waiting();">CHARGEBACKS</a>
-                        </li>
+                        <div class="btn-group" role="group">
+                            <button type="button" class="btn dropdown-toggle" data-bs-toggle="dropdown"
+                                aria-expanded="false">MOLLIE</button>
+                            <ul class="dropdown-menu">
+                                <li class="nav-item">
+                                    <a class="nav-link <?php echo ($this->request->getParam('controller')=='Customers')?'active' :'inactive'; ?>" href="/customers" onclick="waiting();">CLIENTS</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link <?php echo ($this->request->getParam('controller')=='Payments')?'active' :'inactive'; ?>" href="/payments" onclick="waiting();">PAIEMENTS</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link <?php echo ($this->request->getParam('controller')=='Mandates')?'active' :'inactive'; ?>" href="/mandates" onclick="waiting();">MANDATS</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link <?php echo ($this->request->getParam('controller')=='Subscriptions')?'active' :'inactive'; ?>" href="/subscriptions" onclick="waiting();">PRELEVEMENTS</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link <?php echo ($this->request->getParam('controller')=='Chargebacks')?'active' :'inactive'; ?>" href="/chargebacks" onclick="waiting();">CHARGEBACKS</a>
+                                </li>
+                            </ul>
+                        </div>                        
                         <li class="nav-item">
                         <a class="nav-link <?php echo ($this->request->getParam('controller')=='CyclosSubscriptions')?'active' :'inactive'; ?>" href="/cyclossubscriptions" onclick="waiting();">PRELEVEMENTS CYCLOS</a>
                         </li>
                         <li class="nav-item">
                         <a class="nav-link <?php echo ($this->request->getParam('controller')=='AdhesionsHA')?'active' :'inactive'; ?>" href="/AdhesionsHA" onclick="waiting();">ADH HA</a>
                         </li>
+
                     </ul>
                 </div>
 
