@@ -89,10 +89,18 @@ $cakeDescription = 'Nouveaucompte';
                         <li class="nav-item">
                         <a class="nav-link <?php echo ($this->request->getParam('controller')=='CyclosSubscriptions')?'active' :'inactive'; ?>" href="/cyclossubscriptions" onclick="waiting();">PRELEVEMENTS CYCLOS</a>
                         </li>
-                        <li class="nav-item">
-                        <a class="nav-link <?php echo ($this->request->getParam('controller')=='AdhesionsHA')?'active' :'inactive'; ?>" href="/AdhesionsHA" onclick="waiting();">ADH HA</a>
-                        </li>
-
+                        <div class="btn-group" role="group">
+                            <button type="button" class="btn dropdown-toggle" data-bs-toggle="dropdown"
+                                aria-expanded="false">HELLOASSO</button>
+                            <ul class="dropdown-menu">
+                                <li class="nav-item">
+                                    <a class="nav-link <?php echo ($this->request->getParam('controller')=='Helloasso')?'active' :'inactive'; ?>" href="/Helloasso" onclick="waiting();">ADHESIONS</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link <?php echo ($this->request->getParam('controller')=='Helloasso')?'active' :'inactive'; ?>" href="/Helloasso/Dons" onclick="waiting();">DONS</a>
+                                </li>
+                            </ul>
+                        </div>
                     </ul>
                 </div>
 

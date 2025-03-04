@@ -50,11 +50,40 @@ class HelloassoTable extends Table
         }
     }
 
+    public function get_formulaires()
+    {
+        $http = new Client();
+        $url = $this->ha['url'] . '/forms?pageSize=100';
+        $response = $http->get($url, [], [
+            'headers' => [
+                'Authorization' => 'Bearer ' . $this->ha['token'],
+                'Content-Type' => 'application/json'
+            ]
+        ]);
+        $results = $response->getJson();
+        return $results;
+    }
+
     public function get_payments()
     {
         $http = new Client();
         //url = cfg.ha['url']+'/payments'+'?pageSize=100&from='+last_hour_date_time.strftime("%Y-%m-%dT%H:%M:%S")
         $url = $this->ha['url'] . '/payments?pageSize=100';
+        $response = $http->get($url, [], [
+            'headers' => [
+                'Authorization' => 'Bearer ' . $this->ha['token'],
+                'Content-Type' => 'application/json'
+            ]
+        ]);
+        $results = $response->getJson();
+        return $results;
+    }
+
+    public function get_dons()
+    {
+        $this->get_token();
+        $http = new Client();
+        $url = $this->ha['url'] . '/forms/Donation/1/payments?pageSize=100';
         $response = $http->get($url, [], [
             'headers' => [
                 'Authorization' => 'Bearer ' . $this->ha['token'],

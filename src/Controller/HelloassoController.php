@@ -1,10 +1,10 @@
 <?php
-// src/Controller/AdhesionsHAController.php
+// src/Controller/HelloassoController.php
 
 namespace App\Controller;
 use Cake\I18n\DateTime;
 
-class AdhesionsHAController extends AppController
+class HelloassoController extends AppController
 {
     public function index()
     {
@@ -44,5 +44,37 @@ class AdhesionsHAController extends AppController
         }
         $this->set(compact('list_payments'));
         //Debug($list_payments);
+    }
+
+    public function dons()
+    {
+        $this->Authorization->skipAuthorization();
+        $this->viewBuilder()->setLayout('bdc');
+        $session = $this->request->getSession();
+        $email = $session->read('User.email');
+        if (!isset($email)) {
+            return $this->redirect(['action' => 'logout']);
+        }
+        $users = $this->fetchTable('Users');
+        $role = $users->getRole($email);
+        $this->set('role', $role);
+        if (($role != "root") or ($role == "admin")) {
+            $this->Flash->error(__('Vous n\'êtes pas autorisé à accéder à cette page'));
+            return $this->redirect(['controller' => 'Users', 'action' => 'moncompte']);
+        }
+        $helloasso = $this->fetchTable('Helloasso');
+
+        $list_dons = $helloasso->get_dons();
+        foreach ($list_dons['data'] as $key=>$don) {
+            $datestr = new DateTime($don['date']);
+            $list_dons['data'][$key]['date2'] = $datestr->format("d-m-Y H:i:s");
+        }
+        $this->set(compact('list_dons'));
+        /*foreach ($list_payments['data'] as $key=>$payment) {
+            Debug($payment['paymentReceiptUrl']);
+            $datestr = new DateTime($payment['date']);
+            $list_payments['data'][$key]['date2'] = $datestr->format("d-m-Y H:i:s");
+        }
+        $this->set(compact('list_payments'));*/
     }
 }
