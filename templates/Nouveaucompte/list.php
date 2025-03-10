@@ -5,6 +5,7 @@
 <table class="table">
     <thead>
         <tr>
+        <th>Date</th>
         <th>Ref</th>
         <th>Nom</th>
         <th>Prénom</th>
@@ -24,6 +25,9 @@
     if ($nvocompte->email != NULL) {
     ?>
     <tr>
+        <td>
+            <?= $nvocompte->modified ?>
+        </td>
         <td>
             <?= $nvocompte->ref ?>
         </td>
