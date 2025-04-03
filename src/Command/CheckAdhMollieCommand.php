@@ -127,10 +127,10 @@ class CheckAdhMollieCommand extends Command
                             }
                         }
                         elseif (array_key_exists($adh['email'], $resultsMollie['AdhAnnuelle'])) {
-                            $today_dec_1_year = $today;
-                            $today_dec_1_year = $today_dec_1_year->modify("-1 year");
+                            $today_dec_6_months = $today;
+                            $today_dec_6_months = $today_dec_6_months->modify("-6 months");
                             $datemollie = new DateTime($resultsMollie['AdhAnnuelle'][$adh['email']]['paidAt']);
-                            if ($datemollie > $today_dec_1_year) {
+                            if ($datemollie > $today_dec_6_months) {
                                 if (($adh['membership_state'] == 'old') or ($adh['membership_state'] == NULL)) {
                                     /* condition à virer */
                                     if ($adh['email'] != "eva.buchi@wanadoo.fr") {
