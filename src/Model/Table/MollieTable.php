@@ -100,6 +100,38 @@ class MollieTable extends Table
         return $results;
     }
 
+    public function get_all_customers()
+    {
+        $infos = $this->list_customers();
+        $res = $infos['_embedded']['customers'];
+        while ($infos['_links']['next'] != NULL) {
+            if (preg_match('/from=(\w+)\&/', $infos['_links']['next']['href'], $matches)) {
+                $infos = $this->list_customers($matches[1]);
+                $res = array_merge($res, $infos['_embedded']['customers']);
+            }
+        }
+        return $res;
+    }
+
+    public function list_customers($from = "")
+    {
+        $http = new Client();
+        if ($from == "") {
+            $url = $this->mollie['url'] . '/customers?limit=250';
+        } else {
+            $url = $this->mollie['url'] . '/customers?from=' . $from . '&limit=250';
+        }
+        $response = $http->get($url, [], [
+            'headers' => [
+                'Authorization' => 'Bearer ' . $this->mollie['key'],
+                'Content-Type' => 'application/json'
+            ]
+        ]);
+
+        $infos = $response->getJson();
+        return $infos;
+    }
+
     public function get_customers()
     {
         $http = new Client();
@@ -119,19 +151,9 @@ class MollieTable extends Table
 
     public function get_customer($email)
     {
-        $http = new Client();
-        $url = $this->mollie['url'] . '/customers?limit=250';
-        $found = false;
-        $response = $http->get($url, [], [
-            'headers' => [
-                'Authorization' => 'Bearer ' . $this->mollie['key'],
-                'Content-Type' => 'application/json'
-            ]
-        ]);
-        //$results = $response->getJson();
-        $infos = $response->getJson();
+        $infos = $this->get_all_customers();
         $results = array();
-        foreach ($infos['_embedded']['customers'] as $info) {
+        foreach ($infos as $info) {
             if ($info['email'] == $email) {
                 $results[] = $info;
             }
@@ -238,9 +260,11 @@ class MollieTable extends Table
 
     public function get_subscriptions($email) {
         $customers =$this->get_customer($email);
+        Debug($email);
         $results = array();
         foreach ($customers as $customer) {
             $subscriptions = $this->get_subscription_by_id($customer['id'])['_embedded']['subscriptions'];
+            
             foreach ($subscriptions as $subscription) {
                 $results[] = $subscription;
             }
