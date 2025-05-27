@@ -88,8 +88,8 @@ class HelloassoController extends AppController
     public function dons()
     {
         $this->Authorization->skipAuthorization();
-        $this->viewBuilder()->setLayout($this->getLayout($role));
         $role = $this->whoami();
+        $this->viewBuilder()->setLayout($this->getLayout($role));
         $parameters = $this->request->getAttribute('params');
         if (!$this->iamauthorized($parameters['action'], $role)) {
             $this->Flash->error(__('Vous n\'êtes pas autorisé à accéder à cette page'));
