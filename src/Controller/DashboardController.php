@@ -2,26 +2,57 @@
 // src/Controller/DashboardController.php
 
 namespace App\Controller;
-use Cake\Filesystem\Folder;
-use Cake\Filesystem\File;
-use Cake\I18n\DateTime;
-use Cake\Http\Client;
 
 class DashboardController extends AppController
 {
+    public function whoami() 
+    {
+        $session = $this->request->getSession();
+        $email = $session->read('User.email');
+        if (!isset($email)) {
+            return $this->redirect(['action' => 'logout']);
+        }
+        $users = $this->fetchTable('Users');
+        $role = $users->getRole($email);
+        return $role;
+    }
+
+    public function iamauthorized($action, $role)
+    {
+        $authorizations = array(
+            'root' => array(
+                'index'
+            ),
+            'admin' => array(
+                'index'
+            ),
+            'user' => array(
+            )
+        );
+        return (in_array($action, $authorizations[$role]));
+    }
+
+    public function getLayout($role)
+    {
+        switch($role)
+        {
+            case 'root':
+                return 'bdc';
+            case 'admin':
+                return 'bdc';
+            case 'benevole':
+                return 'benevole';
+            default:
+                return 'userstd';
+        }
+    }
+
     public function index($from="")
     {
         $this->Authorization->skipAuthorization();
-        $this->viewBuilder()->setLayout('bdc');
-        $session = $this->request->getSession();
-        $email = $session->read('User.email');
-        $users = $this->fetchTable('Users');
-        $role = $users->getRole($email);
+        $role = $this->whoami();
+        $this->viewBuilder()->setLayout($this->getLayout($role));
         $this->set('role', $role);
-        if (($role != "root") or ($role == "admin")) {
-            $this->Flash->error(__('Vous n\'êtes pas autorisé à accéder à cette page'));
-            return $this->redirect(['controller' => 'Users', 'action' => 'moncompte']);
-        }
         $mollie = $this->fetchTable('Mollie');
         $totalchange = $mollie->calculAmountChanges();
         $this->set(compact('totalchange'));

@@ -19,6 +19,17 @@
     </div>
     <div class="mb-3 row">
         <div class="col-sm-4">
+            <select class="form-select " name="auth">
+                <option value="" disabled selected>Choisir</option>
+                <?php foreach ($list_auth as $auth) {
+                    echo '<option value="' . $auth . '" >' . $auth . '</option>';
+                }
+                ?>
+            </select>
+        </div>  
+    </div>
+    <div class="mb-3 row">
+        <div class="col-sm-4">
             <select class="form-select " name="role">
                 <option value="" disabled selected>Choisir</option>
                 <?php foreach ($list_roles as $role) {

@@ -9,9 +9,8 @@ use Cake\Http\Client;
 
 class CustomersController extends AppController
 {
-    public function index($from="")
+    public function whoami() 
     {
-        $this->Authorization->skipAuthorization();
         $session = $this->request->getSession();
         $email = $session->read('User.email');
         if (!isset($email)) {
@@ -19,18 +18,65 @@ class CustomersController extends AppController
         }
         $users = $this->fetchTable('Users');
         $role = $users->getRole($email);
-        if (($role != "root") or ($role == "admin")) {
+        return $role;
+    }
+
+    public function iamauthorized($action, $role)
+    {
+        $authorizations = array(
+            'root' => array(
+                'index',
+                'add',
+                'edit',
+                'view',
+                'delete'
+            ),
+            'admin' => array(
+                'index',
+                'add',
+                'edit',
+                'view',
+                'delete'
+            ),
+            'user' => array(
+            )
+        );
+        return (in_array($action, $authorizations[$role]));
+    }
+
+    public function getLayout($role)
+    {
+        switch($role)
+        {
+            case 'root':
+                return 'bdc';
+            case 'admin':
+                return 'bdc';
+            case 'benevole':
+                return 'benevole';
+            default:
+                return 'userstd';
+        }
+
+    }
+
+    public function index($from="")
+    {
+        $this->Authorization->skipAuthorization();
+        $role = $this->whoami();
+        $this->viewBuilder()->setLayout($this->getLayout($role));
+        $parameters = $this->request->getAttribute('params');
+        if (!$this->iamauthorized($parameters['action'], $role)) {
             $this->Flash->error(__('Vous n\'êtes pas autorisé à accéder à cette page'));
             return $this->redirect(['controller' => 'Users', 'action' => 'moncompte']);
         }
         $this->set('role', $role);
         $mollie = $this->fetchTable('Mollie');
         $list_customers = array();
-        $customers = $mollie->get_customers();
+        $customers = $mollie->get_all_customers();
         $nbcustomers = count($customers);
         $this->set(compact('nbcustomers'));
         $this->set(compact('customers'));
-        $this->viewBuilder()->setLayout('bdc');
     }
 
     public function add()
@@ -43,13 +89,13 @@ class CustomersController extends AppController
         }
         $users = $this->fetchTable('Users');
         $role = $users->getRole($email);
+        $this->viewBuilder()->setLayout($this->getLayout($role));
         if ($role != "root") {
             $this->Flash->error(__('Vous n\'êtes pas autorisé à accéder à cette page'));
             return $this->redirect(['controller' => 'Users', 'action' => 'moncompte']);
         }
         $mollie = $this->fetchTable('Mollie');
-        $this->viewBuilder()->setLayout('bdc');
-        $customers = $mollie->get_customers();
+        $customers = $mollie->get_all_customers();
         $this->set(compact('customers'));
         if ($this->request->is('post')) {
             $data = $this->request->getData();
@@ -62,18 +108,13 @@ class CustomersController extends AppController
     public function edit($customerid)
     {
         $this->Authorization->skipAuthorization();
-        $session = $this->request->getSession();
-        $email = $session->read('User.email');
-        if (!isset($email)) {
-            return $this->redirect(['action' => 'logout']);
-        }
-        $users = $this->fetchTable('Users');
-        $role = $users->getRole($email);
-        if (($role != "root") or ($role == "admin")) {
+        $role = $this->whoami();
+        $this->viewBuilder()->setLayout($this->getLayout($role));
+        $parameters = $this->request->getAttribute('params');
+        if (!$this->iamauthorized($parameters['action'], $role)) {
             $this->Flash->error(__('Vous n\'êtes pas autorisé à accéder à cette page'));
             return $this->redirect(['controller' => 'Users', 'action' => 'moncompte']);
         }
-        $this->viewBuilder()->setLayout('bdc');
         $now = DateTime::now();
         $startdate = $now->i18nFormat('yyyy-MM-dd');
         $this->set(compact('startdate'));
@@ -92,22 +133,17 @@ class CustomersController extends AppController
     {
         $mollie = $this->fetchTable('Mollie');
         $this->Authorization->skipAuthorization();
-        $session = $this->request->getSession();
-        $email = $session->read('User.email');
-        if (!isset($email)) {
-            return $this->redirect(['action' => 'logout']);
-        }
-        $users = $this->fetchTable('Users');
-        $role = $users->getRole($email);
-        if (($role != "root") or ($role == "admin")) {
+        $role = $this->whoami();
+        $this->viewBuilder()->setLayout($this->getLayout($role));
+        $parameters = $this->request->getAttribute('params');
+        if (!$this->iamauthorized($parameters['action'], $role)) {
             $this->Flash->error(__('Vous n\'êtes pas autorisé à accéder à cette page'));
             return $this->redirect(['controller' => 'Users', 'action' => 'moncompte']);
         }
-        $this->viewBuilder()->setLayout('bdc');
         $subscription = $mollie->get_subscription($customerid, $subscriptionid);
         $this->set(compact('subscription'));
         $list_customers = array();
-        $customers = $mollie->get_customers();
+        $customers = $mollie->get_all_customers();
         foreach ($customers as $customer) {
             $list_customers[$customer['id']] = $customer;
         }
@@ -118,18 +154,13 @@ class CustomersController extends AppController
     public function delete($customerid)
     {
         $this->Authorization->skipAuthorization();
-        $session = $this->request->getSession();
-        $email = $session->read('User.email');
-        if (!isset($email)) {
-            return $this->redirect(['action' => 'logout']);
-        }
-        $users = $this->fetchTable('Users');
-        $role = $users->getRole($email);
-        if (($role != "root") or ($role == "admin")) {
+        $role = $this->whoami();
+        $this->viewBuilder()->setLayout($this->getLayout($role));
+        $parameters = $this->request->getAttribute('params');
+        if (!$this->iamauthorized($parameters['action'], $role)) {
             $this->Flash->error(__('Vous n\'êtes pas autorisé à accéder à cette page'));
             return $this->redirect(['controller' => 'Users', 'action' => 'moncompte']);
         }
-        $this->viewBuilder()->setLayout('bdc');
         $mollie = $this->fetchTable('Mollie');
         //Debug($customerid);
         $mollie->delete_customer($customerid);

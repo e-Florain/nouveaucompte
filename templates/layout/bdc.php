@@ -101,6 +101,9 @@ $cakeDescription = 'Nouveaucompte';
                                 </li>
                             </ul>
                         </div>
+                        <li class="nav-item">
+                        <a class="nav-link <?php echo ($this->request->getParam('controller')=='Odoo')?'active' :'inactive'; ?>" href="/odoo" onclick="waiting();">ODOO</a>
+                        </li>
                     </ul>
                 </div>
 

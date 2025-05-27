@@ -5,28 +5,81 @@ namespace App\Controller;
 
 use Cake\I18n\DateTime;
 use Cake\Mailer\Mailer;
+use Authentication\PasswordHasher\DefaultPasswordHasher;
 
 class UsersController extends AppController
 {
-    private $list_roles = array("User", "Admin", "Root");
+    private $list_roles = array("User", "Admin", "Root", "Benevole");
+
+    private $list_auth = array("cyclos", "SQL");
 
     public function beforeFilter(\Cake\Event\EventInterface $event)
     {
         parent::beforeFilter($event);
-        $this->Authentication->allowUnauthenticated(['login']);
+        $this->Authentication->allowUnauthenticated(['login', 'otp', 'activate']);
+
+    }
+
+    public function whoami() 
+    {
+        $session = $this->request->getSession();
+        $email = $session->read('User.email');
+        if (!isset($email)) {
+            return $this->redirect(['action' => 'logout']);
+        }
+        $users = $this->fetchTable('Users');
+        $role = $users->getRole($email);
+        return $role;
+    }
+
+    public function iamauthorized($action, $role)
+    {
+        $authorizations = array(
+            'root' => array(
+                'index',
+                'importCi',
+                'moncompte',
+                'add'
+            ),
+            'admin' => array(
+                'index',
+                'importCi',
+                'moncompte',
+                'add'
+            ),
+            'benevole' => array(
+                'index',
+                'adhpro',
+                'adhpart'
+            ),
+            'user' => array(   
+            )
+        );
+        return (in_array($action, $authorizations[$role]));
+    }
+
+    public function getLayout($role)
+    {
+        switch($role)
+        {
+            case 'root':
+                return 'bdc';
+            case 'admin':
+                return 'bdc';
+            case 'benevole':
+                return 'benevole';
+            default:
+                return 'userstd';
+        }
 
     }
 
     public function index()
     {
         $this->Authorization->skipAuthorization();
-        $session = $this->request->getSession();
-        $email = $session->read('User.email');
-        if (!isset($email)) {
-            return $this->redirect(['action' => 'logout']);
-        }
-        $role = $this->Users->getRole($email);
-        if (($role != "root") or ($role == "admin")) {
+        $role = $this->whoami();
+        $parameters = $this->request->getAttribute('params');
+        if (!$this->iamauthorized($parameters['action'], $role)) {
             $this->Flash->error(__('Vous n\'êtes pas autorisé à accéder à cette page'));
             return $this->redirect(['controller' => 'Users', 'action' => 'moncompte']);
         }
@@ -34,59 +87,103 @@ class UsersController extends AppController
         $sort = $this->request->getQuery('sort') ?? "ASC";
         $users = $this->Users->find()->order([$order => $sort]);
         $this->set(compact('users'));
-        $this->viewBuilder()->setLayout('bdc');
+        $this->viewBuilder()->setLayout($this->getLayout($role));
     }
 
-    public function test()
+    /*public function test()
     {
         $this->Authorization->skipAuthorization();
         $actions = get_class_methods($this->Authentication);
         Debug($actions);
+    }*/
+
+    public function authCyclos($email, $password)
+    {
+        $datas =  array();
+        $cyclos = $this->fetchTable('Cyclos');
+        $res = $cyclos->getAuth($email, $password);
+        //Debug($res);
+        /* Connexion réussie */
+        if (isset($res['user'])) {
+            $user = $this->findUser($email);
+            if (!is_null($user)) {
+                /* create token */
+                $token = bin2hex(random_bytes(40));
+                $datas['token'] = $token;
+                $datas['displayname'] = $res['user']['display'];
+                $user = $this->Users->patchEntity($user, $datas);
+                $this->Users->save($user);
+                return $this->redirect(['controller' => 'Users', 
+                    'action' => 'otp',
+                    '?' => [
+                        'token' => $token
+                    ]
+                ]);
+            } else {
+                /* create user and token */
+                $token = bin2hex(random_bytes(40));
+                $datas['token'] = $token;
+                $datas['email'] = $email;
+                $datas['displayname'] = $res['user']['display'];
+                $user = $this->Users->newEmptyEntity();
+                $user = $this->Users->patchEntity($user, $datas);
+                $this->Users->save($user);
+                return $this->redirect(['controller' => 'Users', 
+                    'action' => 'otp',
+                    '?' => [
+                        'token' => $token
+                    ]
+                ]);
+            }    
+            return $res;
+        }
+        /* Connexion error */
+        else {
+            if ($res == -2) {
+                $this->Flash->error(__('Impossible de se connecter au serveur'));
+            } else {
+                $this->Flash->error(__('Email ou mot passe invalide'));
+            }
+            
+            return $this->redirect(['controller' => 'Users', 'action' => 'login']);
+        }
     }
 
     public function login()
     {
         $this->Authorization->skipAuthorization();
         $this->viewBuilder()->setLayout('login');
-        $cyclos = $this->fetchTable('Cyclos');
+        
         if ($this->request->is('post')) {
             $data = $this->request->getData();
-            $res = $cyclos->getAuth($data['email'], $data['password']);
-            //Debug($res);
-            if (isset($res['user'])) {
-                $user = $this->findUser($data["email"]);
-                if (!is_null($user)) {
-                    $this->Authentication->setIdentity($user);
-                    $session = $this->request->getSession();
-                    $session->write('User.name', $res['user']['display']);
-                    $session->write('User.email', $user->email);
-                    $session->write('User.id', $user->id);
-                    $session->write('User.role', $user->role);
-                    $result = $this->Authentication->getResult();
-                    return $this->redirect(['controller' => 'Users', 'action' => 'otp']);
-                    if (($user->role == 'root') or ($user->role == 'admin')) {
-                        //Debug($this->request->getAttribute('authentication'));
-                        return $this->redirect(['controller' => 'Nouveaucompte', 'action' => 'list']);
-                    } /* else {
-                       return $this->redirect(['controller' => 'Bdcs', 'action' => 'index']);
-                   }*/
-                } else {
-
-                    $session = $this->request->getSession();
-                    $session->write('User.email', $data['email']);
-                    $session->write('User.name', $res['user']['display']);
-                    $usersession = $this->Users->newEmptyEntity();
-                    $usersession->email = $data['email'];
-                    $this->Authentication->setIdentity($usersession);
-                    //$result = $this->Authentication->getResult();
-                    //Debug($result);
-                    //return $this->redirect(['controller' => 'Users', 'action' => 'moncompte']);
-                    return $this->redirect(['controller' => 'Users', 'action' => 'otp']);
-                }
-
+            /* Teste si le user existe dans la base */
+            $user = $this->findUser($data['email']);
+            /* Si ce n'est pas le cas auth cyclos */
+            if (is_null($user)) {
+                $this->authCyclos($data['email'], $data['password']);
             } else {
-                $this->Flash->error(__('Email ou mot passe invalide'));
-                return $this->redirect(['controller' => 'Users', 'action' => 'login']);
+                /* S'il existe regarder quelle auth utiliser */
+                if ($user['auth'] == 'cyclos') {
+                    $this->authCyclos($data['email'], $data['password']);
+                } else {
+                    if ($this->Authentication->getResult()) {
+                        /* create token */
+                        $token = bin2hex(random_bytes(40));
+                        $datas['token'] = $token;
+                        $datas['displayname'] = $user['firstname']." ".$user['lastname'];
+                        $user = $this->Users->patchEntity($user, $datas);
+                        $this->Users->save($user);
+                        return $this->redirect(['controller' => 'Users', 
+                            'action' => 'otp',
+                            '?' => [
+                                'token' => $token
+                            ]
+                        ]);
+                    } else {
+                        $this->Flash->error(__('Email ou mot passe invalide'));
+                        return $this->redirect(['controller' => 'Users', 'action' => 'login']);
+                    }
+                }
             }
         }
     }
@@ -95,18 +192,31 @@ class UsersController extends AppController
     {
         $this->Authorization->skipAuthorization();
         $this->viewBuilder()->setLayout('login');
-        $session = $this->request->getSession();
-        $email = $session->read('User.email');
-        $role = $session->read('User.role');
+        //$session = $this->request->getSession();
+        //$email = $session->read('User.email');
+        //$role = $session->read('User.role');
 
         if ($this->request->is('post')) {
-            $user = $this->findUser($email);
+            $token = $this->request->getQuery('token');
+            $user = $this->findUserWithToken($token);
             $data = $this->request->getData();
             if ($data['otp'] == $user['otp']) {
+                $this->Authentication->setIdentity($user);
+                $session = $this->request->getSession();
+                $session->write('User.name', $user->displayname);
+                $session->write('User.email', $user->email);
+                $session->write('User.id', $user->id);
+                $session->write('User.role', $user->role);
+                $session->write('User.auth', $user->auth);
+                $result = $this->Authentication->getResult();
                 if (($user->role == 'root') or ($user->role == 'admin')) {
                     return $this->redirect(['controller' => 'Nouveaucompte', 'action' => 'list']);
                 } else {
-                    return $this->redirect(['controller' => 'Users', 'action' => 'moncompte']);
+                    if ($user->auth == 'SQL') {
+                        return $this->redirect(['controller' => 'Odoo', 'action' => 'index']);
+                    } else {
+                        return $this->redirect(['controller' => 'Users', 'action' => 'moncompte']);
+                    }
                 }
             } else {
                 $this->Flash->error(__('Code invalide'));
@@ -116,18 +226,16 @@ class UsersController extends AppController
                 return $this->redirect(['controller' => 'Nouveaucompte', 'action' => 'list']);
             }*/
         } else {
+            $token = $this->request->getQuery('token');
             $datas['otp'] = rand(10000, 99999);
-            $user = $this->findUser($email);
+            $user = $this->findUserWithToken($token);
             if (isset($user)) {
                 $user = $this->Users->patchEntity($user, $datas);
                 $this->Users->save($user);
             } else {
-                $datas['email'] = $email;
-                $user = $this->Users->newEmptyEntity();
-                $user = $this->Users->patchEntity($user, $datas);
-                $this->Users->save($user);
+                return $this->redirect(['controller' => 'Users', 'action' => 'login']);
             }
-            $this->sendEmailOtp($email, $datas);
+            $this->sendEmailOtp($user->email, $datas);
         }
     }
 
@@ -142,40 +250,90 @@ class UsersController extends AppController
     public function add()
     {
         $this->Authorization->skipAuthorization();
-        $session = $this->request->getSession();
-        $email = $session->read('User.email');
-        if (!isset($email)) {
-            return $this->redirect(['action' => 'logout']);
-        }
-        $role = $this->Users->getRole($email);
-        if (($role != "root") or ($role == "admin")) {
+        $role = $this->whoami();
+        $this->viewBuilder()->setLayout($this->getLayout($role));
+        $parameters = $this->request->getAttribute('params');
+        if (!$this->iamauthorized($parameters['action'], $role)) {
             $this->Flash->error(__('Vous n\'êtes pas autorisé à accéder à cette page'));
             return $this->redirect(['controller' => 'Users', 'action' => 'moncompte']);
         }
         $this->set('list_roles', $this->list_roles);
+        $this->set('list_auth', $this->list_auth);
         $user = $this->Users->newEmptyEntity();
         if ($this->request->is('post')) {
-            $user = $this->Users->patchEntity($user, $this->request->getData());
+            $datas = $this->request->getData();
+            $token = bin2hex(random_bytes(40));
+            $datas['token'] = $token;
+            $password = bin2hex(random_bytes(40));
+            $datas['password'] = $password;
+            $user = $this->Users->patchEntity($user, $datas);
             if ($this->Users->save($user)) {
+                if ($datas['auth'] == 'SQL') {
+                    $this->sendEmailTokenCreation($datas['email'], $datas);
+                }
                 $this->Flash->success(__('L\'utilisateur a été ajouté.'));
                 return $this->redirect(['action' => 'add']);
             }
             $this->Flash->error(__('Erreur : Impossible d\'ajouter l\'utilisateur.'));
         }
         $this->set('user', $user);
-        $this->viewBuilder()->setLayout('bdc');
+        $this->viewBuilder()->setLayout($this->getLayout($role));
+    }
+
+    public function activate()
+    {
+        $this->Authorization->skipAuthorization();
+        $this->viewBuilder()->setLayout('login');
+        if ($this->request->is('get')) {
+            $parameters = $this->request->getAttribute('params');
+            if (isset($parameters['?']['token'])) {
+                $token = $parameters['?']['token'];
+            } else {
+                return $this->redirect(['action' => 'moncompte']);
+            }
+            $user = $this->Users->find()
+                ->select(['id', 'firstname', 'lastname', 'displayname', 'email', 'password', 'auth', 'role', 'otp', 'token'])
+                ->where(['token' => $token])
+                ->first();
+            if (!isset($user)) {
+                return $this->redirect(['action' => 'moncompte']);
+            }
+        }
+        if ($this->request->is('post')) {
+            $parameters = $this->request->getAttribute('params');
+            if (isset($parameters['?']['token'])) {
+                $token = $parameters['?']['token'];
+            } else {
+                return $this->redirect(['action' => 'moncompte']);
+            }
+            $user = $this->Users->find()
+                ->select(['id', 'firstname', 'lastname', 'displayname', 'email', 'password', 'auth', 'role', 'otp', 'token'])
+                ->where(['token' => $token])
+                ->first();
+            if (!isset($user)) {
+                return $this->redirect(['action' => 'moncompte']);
+            } else {
+                $datas = $this->request->getData();
+                if ($datas['password'] != $datas['password2']) {
+                    $this->Flash->error(__('Les mots de passe ne correspondent pas'));
+                } else {
+                    $datas['token'] = '';
+                    $user = $this->Users->patchEntity($user, $datas);
+                    if ($this->Users->save($user)) {
+                        $this->Flash->success(__('Votre compte est validé.'));
+                    }
+                }
+            }
+        }
     }
 
     public function edit($id)
     {
         $this->Authorization->skipAuthorization();
-        $session = $this->request->getSession();
-        $email = $session->read('User.email');
-        if (!isset($email)) {
-            return $this->redirect(['action' => 'logout']);
-        }
-        $role = $this->Users->getRole($email);
-        if (($role != "root") or ($role == "admin")) {
+        $role = $this->whoami();
+        $this->viewBuilder()->setLayout($this->getLayout($role));
+        $parameters = $this->request->getAttribute('params');
+        if (!$this->iamauthorized($parameters['action'], $role)) {
             $this->Flash->error(__('Vous n\'êtes pas autorisé à accéder à cette page'));
             return $this->redirect(['controller' => 'Users', 'action' => 'moncompte']);
         }
@@ -203,13 +361,9 @@ class UsersController extends AppController
     public function delete($id)
     {
         $this->Authorization->skipAuthorization();
-        $session = $this->request->getSession();
-        $email = $session->read('User.email');
-        if (!isset($email)) {
-            return $this->redirect(['action' => 'logout']);
-        }
-        $role = $this->Users->getRole($email);
-        if (($role != "root") or ($role == "admin")) {
+        $role = $this->whoami();
+        $parameters = $this->request->getAttribute('params');
+        if (!$this->iamauthorized($parameters['action'], $role)) {
             $this->Flash->error(__('Vous n\'êtes pas autorisé à accéder à cette page'));
             return $this->redirect(['controller' => 'Users', 'action' => 'moncompte']);
         }
@@ -222,13 +376,9 @@ class UsersController extends AppController
     public function resetPassword($id)
     {
         $this->Authorization->skipAuthorization();
-        $session = $this->request->getSession();
-        $email = $session->read('User.email');
-        if (!isset($email)) {
-            return $this->redirect(['action' => 'logout']);
-        }
-        $role = $this->Users->getRole($email);
-        if (($role != "root") or ($role == "admin")) {
+        $role = $this->whoami();
+        $parameters = $this->request->getAttribute('params');
+        if (!$this->iamauthorized($parameters['action'], $role)) {
             $this->Flash->error(__('Vous n\'êtes pas autorisé à accéder à cette page'));
             return $this->redirect(['controller' => 'Users', 'action' => 'moncompte']);
         }
@@ -246,8 +396,17 @@ class UsersController extends AppController
     public function findUser($email)
     {
         $user = $this->Users->find()
-            ->select(['id', 'firstname', 'lastname', 'email', 'role', 'otp'])
+            ->select(['id', 'firstname', 'lastname', 'displayname', 'email', 'password', 'auth', 'role', 'otp'])
             ->where(['email' => $email])
+            ->first();
+        return $user;
+    }
+
+    public function findUserWithToken($token)
+    {
+        $user = $this->Users->find()
+            ->select(['id', 'firstname', 'lastname', 'displayname', 'email', 'password', 'auth', 'role', 'token', 'otp'])
+            ->where(['token' => $token])
             ->first();
         return $user;
     }
@@ -255,24 +414,11 @@ class UsersController extends AppController
     public function moncompte()
     {
         $this->Authorization->skipAuthorization();
+        $role = $this->whoami();
+        
         $session = $this->request->getSession();
         $email = $session->read('User.email');
-        if (!isset($email)) {
-            return $this->redirect(['action' => 'logout']);
-        }
-        
-        $role = $this->Users->getRole($email);
-        if (isset($role)) {
-            if ($role == "root") {
-                $this->viewBuilder()->setLayout('bdc');
-            } elseif ($role == "none") {
-                $this->viewBuilder()->setLayout('userstd');
-            } elseif ($role == "user") {
-                $this->viewBuilder()->setLayout('userstd');
-            }
-        } else {
-            $this->viewBuilder()->setLayout('userstd');
-        }
+        $this->viewBuilder()->setLayout($this->getLayout($role));
         $mollie = $this->fetchTable('Mollie');
         $florapi = $this->fetchTable('Florapi');
         $customer = $mollie->get_customer($email);
@@ -367,20 +513,11 @@ class UsersController extends AppController
 
     public function subscriptionchange($subid)
     {
+        $role = $this->whoami();
         $session = $this->request->getSession();
         $email = $session->read('User.email');
         $this->Authorization->skipAuthorization();
-        if (isset($role)) {
-            if ($role == "root") {
-                $this->viewBuilder()->setLayout('bdc');
-            } elseif ($role == "none") {
-                $this->viewBuilder()->setLayout('userstd');
-            } elseif ($role == "user") {
-                $this->viewBuilder()->setLayout('userstd');
-            }
-        } else {
-            $this->viewBuilder()->setLayout('userstd');
-        }
+        $this->viewBuilder()->setLayout($this->getLayout($role));
         $mollie = $this->fetchTable('Mollie');
         $florapi = $this->fetchTable('Florapi');
         $customer = $mollie->get_customer($email);
@@ -406,20 +543,11 @@ class UsersController extends AppController
 
     public function subscriptionadh($subid)
     {
+        $role = $this->whoami();
         $session = $this->request->getSession();
         $email = $session->read('User.email');
         $this->Authorization->skipAuthorization();
-        if (isset($role)) {
-            if ($role == "root") {
-                $this->viewBuilder()->setLayout('bdc');
-            } elseif ($role == "none") {
-                $this->viewBuilder()->setLayout('userstd');
-            } elseif ($role == "user") {
-                $this->viewBuilder()->setLayout('userstd');
-            }
-        } else {
-            $this->viewBuilder()->setLayout('userstd');
-        }
+        $this->viewBuilder()->setLayout($this->getLayout($role));
         $mollie = $this->fetchTable('Mollie');
         $florapi = $this->fetchTable('Florapi');
         $customer = $mollie->get_customer($email);
@@ -462,21 +590,12 @@ class UsersController extends AppController
 
     public function mandate($mandateid)
     {
+        $role = $this->whoami();
         $session = $this->request->getSession();
         $email = $session->read('User.email');
         $role = $session->read('User.role');
         $this->Authorization->skipAuthorization();
-        if (isset($role)) {
-            if ($role == "root") {
-                $this->viewBuilder()->setLayout('bdc');
-            } elseif ($role == "none") {
-                $this->viewBuilder()->setLayout('userstd');
-            } elseif ($role == "user") {
-                $this->viewBuilder()->setLayout('userstd');
-            }
-        } else {
-            $this->viewBuilder()->setLayout('userstd');
-        }
+        $this->viewBuilder()->setLayout($this->getLayout($role));
         $mollie = $this->fetchTable('Mollie');
         $florapi = $this->fetchTable('Florapi');
         $customer = $mollie->get_customer($email);
@@ -543,22 +662,13 @@ class UsersController extends AppController
 
     public function paymentCB()
     {
+        $role = $this->whoami();
         $session = $this->request->getSession();
         $email = $session->read('User.email');
         $mollie = $this->fetchTable('Mollie');
         $role = $session->read('User.role');
         $this->Authorization->skipAuthorization();
-        if (isset($role)) {
-            if ($role == "root") {
-                $this->viewBuilder()->setLayout('bdc');
-            } elseif ($role == "none") {
-                $this->viewBuilder()->setLayout('userstd');
-            } elseif ($role == "user") {
-                $this->viewBuilder()->setLayout('userstd');
-            }
-        } else {
-            $this->viewBuilder()->setLayout('userstd');
-        }
+        $this->viewBuilder()->setLayout($this->getLayout($role));
         if ($this->request->is('post')) {
             $data = $this->request->getData();
             $numberAsString = number_format($data['amount'], 2);
@@ -586,23 +696,14 @@ class UsersController extends AppController
 
     public function validpayment ($order_id)
     {
+        $role = $this->whoami();
         $this->Authorization->skipAuthorization();
         $session = $this->request->getSession();
         $email = $session->read('User.email');
         $mollie = $this->fetchTable('Mollie');
         $role = $session->read('User.role');
         $this->Authorization->skipAuthorization();
-        if (isset($role)) {
-            if ($role == "root") {
-                $this->viewBuilder()->setLayout('bdc');
-            } elseif ($role == "none") {
-                $this->viewBuilder()->setLayout('userstd');
-            } elseif ($role == "user") {
-                $this->viewBuilder()->setLayout('userstd');
-            }
-        } else {
-            $this->viewBuilder()->setLayout('userstd');
-        }
+        $this->viewBuilder()->setLayout($this->getLayout($role));
         $payment_status = $mollie->get_status_payment($order_id);
         //Debug($payment_status);
         if ($payment_status == "paid") {
@@ -622,13 +723,9 @@ class UsersController extends AppController
     public function importCi()
     {
         $this->Authorization->skipAuthorization();
-        $session = $this->request->getSession();
-        $email = $session->read('User.email');
-        if (!isset($email)) {
-            return $this->redirect(['action' => 'logout']);
-        }
-        $role = $this->Users->getRole($email);
-        if (($role != "root") or ($role == "admin")) {
+        $role = $this->whoami();
+        $parameters = $this->request->getAttribute('params');
+        if (!$this->iamauthorized($parameters['action'], $role)) {
             $this->Flash->error(__('Vous n\'êtes pas autorisé à accéder à cette page'));
             return $this->redirect(['controller' => 'Users', 'action' => 'moncompte']);
         }
@@ -665,6 +762,21 @@ class UsersController extends AppController
             ->setViewVars($datas)
             ->viewBuilder()
             ->setTemplate('otp')
+            ->setLayout('default');
+        $mailer->deliver();
+    }
+
+    public function sendEmailTokenCreation($to, $datas)
+    {
+        $mailer = new Mailer();
+        $mailer
+            ->setEmailFormat('both')
+            ->setTo($to)
+            ->setSubject('Florain - Activation de votre compte')
+            ->setFrom(['noreply@florain.fr' => 'Le Florain Numérique'])
+            ->setViewVars($datas)
+            ->viewBuilder()
+            ->setTemplate('tokencreate')
             ->setLayout('default');
         $mailer->deliver();
     }

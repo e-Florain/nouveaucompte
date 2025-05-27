@@ -260,7 +260,6 @@ class MollieTable extends Table
 
     public function get_subscriptions($email) {
         $customers =$this->get_customer($email);
-        Debug($email);
         $results = array();
         foreach ($customers as $customer) {
             $subscriptions = $this->get_subscription_by_id($customer['id'])['_embedded']['subscriptions'];
@@ -634,6 +633,26 @@ class MollieTable extends Table
         $infos = $response->getJson();
         return $infos;
     }
+
+    /*public function update_subscription_date($subscription, $customer, $date)
+    {
+        $http = new Client();
+        $url = $this->mollie['url'] . "/customers/" . $customer . "/subscriptions/" . $subscription;
+        $found = false;
+        $datas = array(
+            "interval" => '1 month'
+        );
+        $json = json_encode($datas);
+        var_dump($datas);
+        $response = $http->post($url, $json, [
+            'headers' => [
+                'Authorization' => 'Bearer ' . $this->mollie['key'],
+                'Content-Type' => 'application/json'
+            ]
+        ]);
+        $infos = $response->getJson();
+        return $infos;
+    }*/
 
     public function cancel_subscription($customer, $subscription)
     {

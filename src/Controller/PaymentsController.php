@@ -6,11 +6,8 @@ namespace App\Controller;
 class PaymentsController extends AppController
 {
 
-    public function index($from="")
+    public function whoami() 
     {
-        $this->Authorization->skipAuthorization();
-        $this->viewBuilder()->setLayout('bdc');
-        $mollie = $this->fetchTable('Mollie');
         $session = $this->request->getSession();
         $email = $session->read('User.email');
         if (!isset($email)) {
@@ -18,14 +15,57 @@ class PaymentsController extends AppController
         }
         $users = $this->fetchTable('Users');
         $role = $users->getRole($email);
-        if (($role != "root") or ($role == "admin")) {
+        return $role;
+    }
+
+    public function iamauthorized($action, $role)
+    {
+        $authorizations = array(
+            'root' => array(
+                'index',
+                'cb'
+            ),
+            'admin' => array(
+                'index',
+                'cb'
+            ),
+            'user' => array(
+            )
+        );
+        return (in_array($action, $authorizations[$role]));
+    }
+
+    public function getLayout($role)
+    {
+        switch($role)
+        {
+            case 'root':
+                return 'bdc';
+            case 'admin':
+                return 'bdc';
+            case 'benevole':
+                return 'benevole';
+            default:
+                return 'userstd';
+        }
+
+    }
+
+    public function index($from="")
+    {
+        $this->Authorization->skipAuthorization();
+        $mollie = $this->fetchTable('Mollie');
+        $role = $this->whoami();
+        $this->viewBuilder()->setLayout($this->getLayout($role));
+        $parameters = $this->request->getAttribute('params');
+        if (!$this->iamauthorized($parameters['action'], $role)) {
             $this->Flash->error(__('Vous n\'êtes pas autorisé à accéder à cette page'));
             return $this->redirect(['controller' => 'Users', 'action' => 'moncompte']);
         }
-        $this->set('role', $role);
+        //$this->set('role', $role);
         $payments = $mollie->list_payments($from);
         $list_customers = array();
-        $customers = $mollie->get_customers();
+        $customers = $mollie->get_all_customers();
         foreach ($customers as $customer) {
             $list_customers[$customer['id']] = $customer;
         }
@@ -49,6 +89,38 @@ class PaymentsController extends AppController
         $this->set(compact('list_payments'));
         $this->set(compact('list_customers'));
         //var_dump($list_customers);
+    }
+
+    public function cb()
+    {
+        $this->Authorization->skipAuthorization();
+        $mollie = $this->fetchTable('Mollie');
+        $role = $this->whoami();
+        $this->viewBuilder()->setLayout($this->getLayout($role));
+        $parameters = $this->request->getAttribute('params');
+        if (!$this->iamauthorized($parameters['action'], $role)) {
+            $this->Flash->error(__('Vous n\'êtes pas autorisé à accéder à cette page'));
+            return $this->redirect(['controller' => 'Users', 'action' => 'moncompte']);
+        }
+        $payments = $mollie->list_payments();
+        $list_customers = array();
+        $customers = $mollie->get_all_customers();
+        foreach ($customers as $customer) {
+            $list_customers[$customer['id']] = $customer;
+        }
+        $list_payments = array();
+        foreach ($payments['_embedded']['payments'] as $payment) {
+            $result = array();
+            if (($payment['method'] == "creditcard") && ($payment['status'] == "paid")) {
+                $list_payments[] = $payment;
+            }
+            
+        }
+        $nbpayments = count($list_payments);
+        $this->set(compact('nbpayments'));
+        $this->set(compact('list_payments'));
+        $this->set(compact('list_customers'));
+        //Debug($results);
     }
 
     /*public function onepercent()

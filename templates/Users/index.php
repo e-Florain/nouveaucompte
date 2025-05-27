@@ -15,6 +15,7 @@
         <th>Prénom</th>
         <th>Email</th>
         <th>Role</th>
+        <th>Authentication</th>
         <th></th>
     </thead>
     <tbody>
@@ -35,6 +36,9 @@
         </td>
         <td>
             <?= $user->role ?>
+        </td>
+        <td>
+            <?= $user->auth ?>
         </td>
         <td class="icons">
             <a <?php echo 'href="/users/edit/'.$user->id.'"'; ?> class="btn-floating btn-large waves-effect waves-light btn-green"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-pen" viewBox="0 0 16 16">

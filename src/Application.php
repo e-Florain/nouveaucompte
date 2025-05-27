@@ -135,7 +135,7 @@ class Application extends BaseApplication implements AuthenticationServiceProvid
         $authenticationService->loadIdentifier('Authentication.Password', [
             'fields' => [
                 'username' => 'email',
-                //'password' => 'password',
+                'password' => 'password',
             ],
         ]);
 

@@ -5,10 +5,8 @@ namespace App\Controller;
 
 class MandatesController extends AppController
 {
-    public function index()
+    public function whoami() 
     {
-        $this->Authorization->skipAuthorization();
-        $this->viewBuilder()->setLayout('bdc');
         $session = $this->request->getSession();
         $email = $session->read('User.email');
         if (!isset($email)) {
@@ -16,14 +14,62 @@ class MandatesController extends AppController
         }
         $users = $this->fetchTable('Users');
         $role = $users->getRole($email);
-        $this->set('role', $role);
-        if (($role != "root") or ($role == "admin")) {
+        return $role;
+    }
+
+    public function iamauthorized($action, $role)
+    {
+        $authorizations = array(
+            'root' => array(
+                'index',
+                'add',
+                'edit',
+                'view',
+                'delete'
+            ),
+            'admin' => array(
+                'index',
+                'add',
+                'edit',
+                'view',
+                'delete'
+            ),
+            'user' => array(
+            )
+        );
+        return (in_array($action, $authorizations[$role]));
+    }
+
+    public function getLayout($role)
+    {
+        switch($role)
+        {
+            case 'root':
+                return 'bdc';
+            case 'admin':
+                return 'bdc';
+            case 'benevole':
+                return 'benevole';
+            default:
+                return 'userstd';
+        }
+
+    }
+
+    public function index()
+    {
+        $this->Authorization->skipAuthorization();
+        $role = $this->whoami();
+        $this->viewBuilder()->setLayout($this->getLayout($role));
+        $parameters = $this->request->getAttribute('params');
+        if (!$this->iamauthorized($parameters['action'], $role)) {
             $this->Flash->error(__('Vous n\'êtes pas autorisé à accéder à cette page'));
             return $this->redirect(['controller' => 'Users', 'action' => 'moncompte']);
         }
+        $this->set('role', $role);
         $mollie = $this->fetchTable('Mollie');
         $list_customers = array();
-        $customers = $mollie->get_customers();
+        $customers = $mollie->get_all_customers();
         $list_mandates = array();
         foreach ($customers as $customer) {
             $list_customers[$customer['id']] = $customer;
@@ -41,20 +87,15 @@ class MandatesController extends AppController
     public function add()
     {
         $this->Authorization->skipAuthorization();
-        $session = $this->request->getSession();
-        $email = $session->read('User.email');
-        if (!isset($email)) {
-            return $this->redirect(['action' => 'logout']);
-        }
-        $users = $this->fetchTable('Users');
-        $role = $users->getRole($email);
-        if (($role != "root") or ($role == "admin")) {
+        $role = $this->whoami();
+        $parameters = $this->request->getAttribute('params');
+        if (!$this->iamauthorized($parameters['action'], $role)) {
             $this->Flash->error(__('Vous n\'êtes pas autorisé à accéder à cette page'));
             return $this->redirect(['controller' => 'Users', 'action' => 'moncompte']);
         }
         $mollie = $this->fetchTable('Mollie');
-        $this->viewBuilder()->setLayout('bdc');
-        $customers = $mollie->get_customers();
+        $this->viewBuilder()->setLayout($this->getLayout($role));
+        $customers = $mollie->get_all_customers();
         $this->set(compact('customers'));
         if ($this->request->is('post')) {
             $data = $this->request->getData();
@@ -79,23 +120,18 @@ class MandatesController extends AppController
     public function edit($customerid, $mandateid)
     {
         $this->Authorization->skipAuthorization();
-        $session = $this->request->getSession();
-        $email = $session->read('User.email');
-        if (!isset($email)) {
-            return $this->redirect(['action' => 'logout']);
-        }
-        $users = $this->fetchTable('Users');
-        $role = $users->getRole($email);
-        if (($role != "root") or ($role == "admin")) {
+        $role = $this->whoami();
+        $parameters = $this->request->getAttribute('params');
+        if (!$this->iamauthorized($parameters['action'], $role)) {
             $this->Flash->error(__('Vous n\'êtes pas autorisé à accéder à cette page'));
             return $this->redirect(['controller' => 'Users', 'action' => 'moncompte']);
         }
         $mollie = $this->fetchTable('Mollie');
-        $this->viewBuilder()->setLayout('bdc');
+        $this->viewBuilder()->setLayout($this->getLayout($role));
         $mandate = $mollie->get_mandate($customerid, $mandateid);
         $this->set(compact('mandate'));
         $list_customers = array();
-        $customers = $mollie->get_customers();
+        $customers = $mollie->get_all_customers();
         /*foreach ($customers as $customer) {
             $list_customers[$customer['id']] = $customer;
         }*/
@@ -157,14 +193,9 @@ class MandatesController extends AppController
     public function delete($customerid, $mandateid)
     {
         $this->Authorization->skipAuthorization();
-        $session = $this->request->getSession();
-        $email = $session->read('User.email');
-        if (!isset($email)) {
-            return $this->redirect(['action' => 'logout']);
-        }
-        $users = $this->fetchTable('Users');
-        $role = $users->getRole($email);
-        if (($role != "root") or ($role == "admin")) {
+        $role = $this->whoami();
+        $parameters = $this->request->getAttribute('params');
+        if (!$this->iamauthorized($parameters['action'], $role)) {
             $this->Flash->error(__('Vous n\'êtes pas autorisé à accéder à cette page'));
             return $this->redirect(['controller' => 'Users', 'action' => 'moncompte']);
         }

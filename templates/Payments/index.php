@@ -1,4 +1,13 @@
 <!-- File: templates/payments/index.php -->
+<ul class="nav">
+  <li class="nav-item">
+    <a class="nav-link active" aria-current="page" href="#">Paiements</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link" href="/payments/cb">CB</a>
+  </li>
+</ul>
+
 <br>
 <div class="mb-3">
     <input type="search" class="form-control" list="datalistOptions" id="search" placeholder="Chercher ...">
@@ -16,6 +25,8 @@
         </div>
     </div>
 </form>-->
+
+
 <div id="results"></div>
 <table class="table-striped table" id="table-payments">
     <tr>

@@ -9,19 +9,68 @@ use Cake\Http\Client;
 
 class CyclossubscriptionsController extends AppController
 {
+    public function whoami() 
+    {
+        $session = $this->request->getSession();
+        $email = $session->read('User.email');
+        if (!isset($email)) {
+            return $this->redirect(['action' => 'logout']);
+        }
+        $users = $this->fetchTable('Users');
+        $role = $users->getRole($email);
+        return $role;
+    }
+
+    public function iamauthorized($action, $role)
+    {
+        $authorizations = array(
+            'root' => array(
+                'index',
+                'findSub',
+                'add',
+                'view',
+                'delete'
+            ),
+            'admin' => array(
+                'index',
+                'findSub',
+                'add',
+                'view',
+                'delete'
+            ),
+            'user' => array(
+            )
+        );
+        return (in_array($action, $authorizations[$role]));
+    }
+
+    public function getLayout($role)
+    {
+        switch($role)
+        {
+            case 'root':
+                return 'bdc';
+            case 'admin':
+                return 'bdc';
+            case 'benevole':
+                return 'benevole';
+            default:
+                return 'userstd';
+        }
+
+    }
+
     public function index($from="")
     {
         $this->Authorization->skipAuthorization();
-        $this->viewBuilder()->setLayout('bdc');
-        $session = $this->request->getSession();
-        $email = $session->read('User.email');
-        $users = $this->fetchTable('Users');
-        $role = $users->getRole($email);
-        $this->set('role', $role);
-        if (($role != "root") or ($role == "admin")) {
+        $role = $this->whoami();
+        $this->viewBuilder()->setLayout($this->getLayout($role));
+        $parameters = $this->request->getAttribute('params');
+        if (!$this->iamauthorized($parameters['action'], $role)) {
             $this->Flash->error(__('Vous n\'êtes pas autorisé à accéder à cette page'));
             return $this->redirect(['controller' => 'Users', 'action' => 'moncompte']);
         }
+        $this->set('role', $role);
         $order = $this->request->getQuery('orderby') ?? "created";
         $sort = $this->request->getQuery('sort') ?? "ASC";
         $subscriptions = $this->Cyclossubscriptions->find()->order([$order => $sort]);
@@ -42,6 +91,13 @@ class CyclossubscriptionsController extends AppController
 
     public function findSub($email)
     {
+        $role = $this->whoami();
+        $parameters = $this->request->getAttribute('params');
+        if (!$this->iamauthorized($parameters['action'], $role)) {
+            $this->Flash->error(__('Vous n\'êtes pas autorisé à accéder à cette page'));
+            return $this->redirect(['controller' => 'Users', 'action' => 'moncompte']);
+        }
+        
         $user = $this->Cyclossubscriptions->find()
             ->select(['id', 'account_cyclos', 'sub_interval', 'amount', 'nextpaymentdate', 'startdate', 'created', 'modified'])
             ->where(['account_cyclos' => $email])
@@ -52,7 +108,14 @@ class CyclossubscriptionsController extends AppController
     public function add()
     {
         $this->Authorization->skipAuthorization();
-        $this->viewBuilder()->setLayout('bdc');
+        $role = $this->whoami();
+        $parameters = $this->request->getAttribute('params');
+        if (!$this->iamauthorized($parameters['action'], $role)) {
+            $this->Flash->error(__('Vous n\'êtes pas autorisé à accéder à cette page'));
+            return $this->redirect(['controller' => 'Users', 'action' => 'moncompte']);
+        }
+
+        $this->viewBuilder()->setLayout($this->getLayout($role));
         $now = DateTime::now();
         $cyclos = $this->fetchTable('Cyclos');
         $pros = $cyclos->getUsers('professionnels');
@@ -79,7 +142,14 @@ class CyclossubscriptionsController extends AppController
     public function delete($subid)
     {
         $this->Authorization->skipAuthorization();
-        $this->viewBuilder()->setLayout('bdc');
+        $role = $this->whoami();
+        $parameters = $this->request->getAttribute('params');
+        if (!$this->iamauthorized($parameters['action'], $role)) {
+            $this->Flash->error(__('Vous n\'êtes pas autorisé à accéder à cette page'));
+            return $this->redirect(['controller' => 'Users', 'action' => 'moncompte']);
+        }
+
+        $this->viewBuilder()->setLayout($this->getLayout($role));
         $sub = $this->Cyclossubscriptions->get($subid);
         if ($this->Cyclossubscriptions->delete($sub)) {
             $this->Flash->success(__('Le prélèvement a été supprimé.'));
@@ -90,7 +160,14 @@ class CyclossubscriptionsController extends AppController
     public function edit($subid)
     {
         $this->Authorization->skipAuthorization();
-        $this->viewBuilder()->setLayout('bdc');
+        $role = $this->whoami();
+        $parameters = $this->request->getAttribute('params');
+        if (!$this->iamauthorized($parameters['action'], $role)) {
+            $this->Flash->error(__('Vous n\'êtes pas autorisé à accéder à cette page'));
+            return $this->redirect(['controller' => 'Users', 'action' => 'moncompte']);
+        }
+
+        $this->viewBuilder()->setLayout($this->getLayout($role));
         $cyclos = $this->fetchTable('Cyclos');
         $pros = $cyclos->getUsers('professionnels');
         $this->set(compact('pros'));
@@ -113,7 +190,14 @@ class CyclossubscriptionsController extends AppController
     public function view($subid)
     {
         $this->Authorization->skipAuthorization();
-        $this->viewBuilder()->setLayout('bdc');
+        $role = $this->whoami();
+        $parameters = $this->request->getAttribute('params');
+        if (!$this->iamauthorized($parameters['action'], $role)) {
+            $this->Flash->error(__('Vous n\'êtes pas autorisé à accéder à cette page'));
+            return $this->redirect(['controller' => 'Users', 'action' => 'moncompte']);
+        }
+
+        $this->viewBuilder()->setLayout($this->getLayout($role));
         $cyclos = $this->fetchTable('Cyclos');
         $pros = $cyclos->getUsers('professionnels');
         $this->set(compact('pros'));

@@ -365,6 +365,8 @@
   $( '#table-mandates' ).searchable();
   $( '#table-payments' ).searchable();
   $( '#table-subscriptions' ).searchable();
+  $( '#table-adhpart' ).searchable();
+  $( '#table-adhpro' ).searchable();
 
   $(function () {
     $('#datepicker1').datepicker(
