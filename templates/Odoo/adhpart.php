@@ -12,13 +12,50 @@
 <table class="table" id="table-adhpart">
     <thead>
         <tr>
+        <th><?= $this->Html->link("Num", [
+            'controller' => 'odoo',
+            'action' => 'adhpart',
+            '?' => ['orderby' => "ref"]
+        ]); ?>
+        </th>
+        <th><?= $this->Html->link("Nom", [
+            'controller' => 'odoo',
+            'action' => 'adhpart',
+            '?' => ['orderby' => "lastname"]
+        ]); ?>
+        </th>
+        <th><?= $this->Html->link("Prénom", [
+            'controller' => 'odoo',
+            'action' => 'adhpart',
+            '?' => ['orderby' => "firstname"]
+        ]); ?>
+        </th>
+        <th><?= $this->Html->link("Email", [
+            'controller' => 'odoo',
+            'action' => 'adhpart',
+            '?' => ['orderby' => "email"]
+        ]); ?>
+        </th>
+        <th><?= $this->Html->link("Date de fin d'adhésion", [
+            'controller' => 'odoo',
+            'action' => 'adhpart',
+            '?' => ['orderby' => "membership_stop"]
+        ]); ?>
+        <th><?= $this->Html->link("Adhésion valide", [
+            'controller' => 'odoo',
+            'action' => 'adhpart',
+            '?' => ['orderby' => "membership_state"]
+        ]); ?>
+        </th>
+    <!--</tr>
+        <tr>
             <th>Num</th>
             <th>Nom</th>
             <th>Prénom</th>
             <th>Email</th>
             <th>Date de fin d'adhésion</th>
             <th>Adhésion valide</th>
-        </tr>
+        </tr>-->
     </thead>
     <tbody>
 <?php 

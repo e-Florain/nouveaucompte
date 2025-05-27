@@ -83,6 +83,11 @@ class OdooController extends AppController
         $florapi = $this->fetchTable('Florapi');
         $adhs = $florapi->getAdhs($filters);
         $listadhs = array();
+        if (isset($parameters['?']['orderby'])) {
+            array_multisort(array_column($adhs, $parameters['?']['orderby']), SORT_ASC, $adhs); 
+        } else {
+            array_multisort(array_column($adhs, 'lastname'), SORT_ASC, $adhs); 
+        }
         foreach ($adhs as $adh) {
             if ($adh['membership_stop'] != null) {
                 $expirdate = DateTime::createFromFormat('D, d M Y H:i:s T', $adh['membership_stop']);
@@ -105,6 +110,11 @@ class OdooController extends AppController
         $this->viewBuilder()->setLayout($this->getLayout($role));
         $florapi = $this->fetchTable('Florapi');
         $adhs = $florapi->getAdhpros($filters);
+        if (isset($parameters['?']['orderby'])) {
+            array_multisort(array_column($adhs, $parameters['?']['orderby']), SORT_ASC, $adhs); 
+        } else {
+            array_multisort(array_column($adhs, 'name'), SORT_ASC, $adhs); 
+        }
         $this->set(compact('adhs'));
     }
 }

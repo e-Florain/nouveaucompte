@@ -12,9 +12,24 @@
 <table class="table" id="table-adhpro">
     <thead>
         <tr>
-            <th>Nom</th>
-            <th>Email</th>
-            <th>Adhésion valide</th>
+            <th><?= $this->Html->link("Nom", [
+                'controller' => 'odoo',
+                'action' => 'adhpro',
+                '?' => ['orderby' => "name"]
+            ]); ?>
+            </th>
+            <th><?= $this->Html->link("Email", [
+                'controller' => 'odoo',
+                'action' => 'adhpro',
+                '?' => ['orderby' => "email"]
+            ]); ?>
+            </th>
+            <th><?= $this->Html->link("Adhésion valide", [
+                'controller' => 'odoo',
+                'action' => 'adhpro',
+                '?' => ['orderby' => "membership_state"]
+            ]); ?>
+            </th>
         </tr>
     </thead>
     <tbody>
