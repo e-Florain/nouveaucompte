@@ -62,6 +62,9 @@ class OdooController extends AppController
     {
         $this->Authorization->skipAuthorization();
         $role = $this->whoami();
+        $session = $this->request->getSession();
+        $auth = $session->read('User.auth');
+        $this->set(compact('auth'));
         $parameters = $this->request->getAttribute('params');
         if (!$this->iamauthorized($parameters['action'], $role)) {
             $this->Flash->error(__('Vous n\'êtes pas autorisé à accéder à cette page'));
@@ -74,6 +77,9 @@ class OdooController extends AppController
     {
         $this->Authorization->skipAuthorization();
         $role = $this->whoami();
+        $session = $this->request->getSession();
+        $auth = $session->read('User.auth');
+        $this->set(compact('auth'));
         $parameters = $this->request->getAttribute('params');
         if (!$this->iamauthorized($parameters['action'], $role)) {
             $this->Flash->error(__('Vous n\'êtes pas autorisé à accéder à cette page'));
@@ -102,6 +108,9 @@ class OdooController extends AppController
     {
         $this->Authorization->skipAuthorization();
         $role = $this->whoami();
+        $session = $this->request->getSession();
+        $auth = $session->read('User.auth');
+        $this->set(compact('auth'));
         $parameters = $this->request->getAttribute('params');
         if (!$this->iamauthorized($parameters['action'], $role)) {
             $this->Flash->error(__('Vous n\'êtes pas autorisé à accéder à cette page'));

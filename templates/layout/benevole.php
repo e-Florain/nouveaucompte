@@ -56,9 +56,11 @@ $cakeDescription = 'Nouveaucompte';
                 
                 <div class="collapse navbar-collapse" id="navbarCollapse">
                     <ul class="navbar-nav">
+                        <?php if ($auth != "SQL") { ?>
                         <li class="nav-item">
                             <a class="nav-link <?php echo ($this->request->getParam('controller')=='Users')?'active' :'inactive'; ?>" href="/users/moncompte" onclick="waiting();">MONCOMPTE</a>
                         </li>
+                        <?php } ?>
                         <li class="nav-item">
                             <a class="nav-link <?php echo ($this->request->getParam('controller')=='Odoo')?'active' :'inactive'; ?>" href="/odoo" onclick="waiting();">ODOO</a>
                         </li>
