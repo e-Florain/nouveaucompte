@@ -14,12 +14,17 @@ class MindeeTable extends Table
     use LocatorAwareTrait;
 
     private $mindee = array();
+    private $search; 
+    private $replace;
 
     public function initialize(array $config): void
     {
         $this->addBehavior('Timestamp');
         $this->mindee['url'] = Configure::read('Mindee.url');
         $this->mindee['key'] = Configure::read('Mindee.key');
+        $this->mindee['key_passport'] = Configure::read('Mindee.key_passport');
+        $this->search = explode(",", "ç,æ,œ,á,é,í,ó,ú,à,è,ì,ò,ù,ä,ë,ï,ö,ü,ÿ,â,ê,î,ô,û,å,e,i,ø,u");
+        $this->replace = explode(",", "c,ae,oe,a,e,i,o,u,a,e,i,o,u,a,e,i,o,u,y,a,e,i,o,u,a,e,i,o,u");
     }
 
 
@@ -63,16 +68,16 @@ class MindeeTable extends Table
             return $results;
         }*/
         $res = $this->checkIdorPassport($file);
-        
         if (isset($res['result'])) {
             if ($res['result'] == False) {
                 return $res;
             }
         }
-        //var_dump($res['document']['inference']['pages'][0]['prediction']['alternate_name']['value']);
+        //Debug($res['document']['inference']['pages'][0]['prediction']['alternate_name']['value']);
         $regex = "/(";
         if (isset($res['document']['inference']['prediction']['alternate_name']['value'])) {
-            $epouseName = $res['document']['inference']['prediction']['alternate_name']['value'];
+            //$epouseName = $res['document']['inference']['prediction']['alternate_name']['value'];
+            $epouseName = str_replace($this->search, $this->replace, $res['document']['inference']['prediction']['alternate_name']['value']);
             if (preg_match('/Epouse\s+(.*)/', $epouseName, $matches)) {
                 $usageName = $matches[1];
                 $regex .= $matches[1];
@@ -82,7 +87,8 @@ class MindeeTable extends Table
             }
         }
         if ($res['document']['inference']['prediction']['surname']['value'] != NULL) {
-            $regex .= "|" . $res['document']['inference']['prediction']['surname']['value'] . ")";
+            //$regex .= "|" . $res['document']['inference']['prediction']['surname']['value'] . ")";
+            $regex .= "|" . str_replace($this->search, $this->replace, $res['document']['inference']['prediction']['surname']['value']) . ")";
         } else {
             $regex .= ")";
             $results['result'] = False;
@@ -91,11 +97,11 @@ class MindeeTable extends Table
         }
         if (isset($res['document']['inference']['prediction']['given_names'][0])) {
             if ($res['document']['inference']['prediction']['given_names'][0]['value'] != NULL) {
-                $firstname = $res['document']['inference']['prediction']['given_names'][0]['value'];
-                if (substr($firstname, -1) == ",") {
-                    $regex .= "\s+" . substr_replace($firstname, '', -1);
+                $firstname_regex = str_replace($this->search, $this->replace, $res['document']['inference']['prediction']['given_names'][0]['value']);
+                if (substr($firstname_regex, -1) == ",") {
+                    $regex .= "\s+" . substr_replace($firstname_regex, '', -1);
                 } else {
-                    $regex .= "\s+" . $firstname;
+                    $regex .= "\s+" . $firstname_regex;
                 }
                 
             }
@@ -163,7 +169,7 @@ class MindeeTable extends Table
             $json = json_encode($datas);
             $url = $this->mindee['url'] . "/$ACCOUNT/$ENDPOINT/v$VERSION/predict";
             $headers = array(
-                "Authorization: Token ".$this->mindee['key']
+                "Authorization: Token ".$this->mindee['key_passport']
             );
             $options = array(
                 CURLOPT_URL => $url,
