@@ -68,7 +68,7 @@ $cakeDescription = 'Nouveaucompte';
         <div class="container">
             <h5 class="black-text">Liens</h5>
                 <ul>
-                  <li><a class="black-text text-lighten-3" href="https://www.monnaielocalenancy.fr/mentions-legales/">Mentions légales</a></li>
+                  <li><a class="black-text text-lighten-3" href="https://www.florain.fr/mentions-legales/">Mentions légales</a></li>
                   <li><a class="black-text text-lighten-3" href="mailto:contact@florain.fr">Nous contacter</a></li>
                   <li><a class="black-text text-lighten-3" href="mailto:support@florain.fr">Contacter le support technique</a></li>
                 </ul>
