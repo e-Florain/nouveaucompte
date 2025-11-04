@@ -16,7 +16,7 @@ class CheckAdhMollieCommand extends Command
         $contactsadmin = Configure::read('ContactsAdmin');
         if (count($datas) > 0) {
             foreach ($contactsadmin as $contact) {
-                $this->sendEmailReAdhesions($contact, $datas);
+                $this->sendAdminEmailReAdhesions($contact, $datas);
             }
         }
         return static::CODE_SUCCESS;
@@ -164,6 +164,9 @@ class CheckAdhMollieCommand extends Command
                                         } else {
                                             $datas['orga_choice'] = "Non choisie";
                                         }
+                                        $this->sendAdhEmailReAdhesions($datas['email'], $datas);
+                                        /* To debug a enlever */
+                                        $this->sendAdhEmailReAdhesions('groche@guigeek.org', $datas);
                                         $results[] = $datas;
                                     }
                                 }
@@ -176,7 +179,7 @@ class CheckAdhMollieCommand extends Command
         return $results;
     }
 
-    public function sendEmailReAdhesions($to, $datas)
+    public function sendAdminEmailReAdhesions($to, $datas)
     {
         $mailer = new Mailer();
         $mailer
@@ -186,9 +189,23 @@ class CheckAdhMollieCommand extends Command
             ->setFrom(['noreply@florain.fr' => 'Le Florain Numérique'])
             ->setViewVars(array("datas" => $datas))
             ->viewBuilder()
-            ->setTemplate('readhesion')
+            ->setTemplate('readhesionforadmins')
             ->setLayout('default');
         $mailer->deliver();
     }
 
+    public function sendAdhEmailReAdhesions($to, $datas)
+    {
+        $mailer = new Mailer();
+        $mailer
+            ->setEmailFormat('both')
+            ->setTo($to)
+            ->setSubject('Florain - votre réadhésion')
+            ->setFrom(['noreply@florain.fr' => 'Le Florain Numérique'])
+            ->setViewVars(array("datas" => $datas))
+            ->viewBuilder()
+            ->setTemplate('readhesionforadh')
+            ->setLayout('default');
+        $mailer->deliver();
+    }
 }
