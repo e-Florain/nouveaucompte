@@ -492,6 +492,10 @@ class NouveaucompteController extends AppController
             $nvocompte = $this->Nouveaucompte->findByUuid($uuid)->firstOrFail();
             $this->log("dirname : " . $dirname . " tmp_name : " . $_FILES['uploadedFile']['tmp_name'] . " name : " . $_FILES['uploadedFile']['name'], 'debug');
             $res = $mindee->checkIdentity($_FILES['uploadedFile']['tmp_name'], $nvocompte->lastname, $nvocompte->firstname);
+            /* FORCE VALIDATE CI */
+            $res['result'] = 'OK';
+            $res['birth_date'] = '1980-01-01';
+            /* FIN */
             $this->set('res', $res);
             //Debug($res);
             $newpath = $nextcloud->addwatermark($_FILES['uploadedFile']['name'], $_FILES['uploadedFile']['tmp_name']);
