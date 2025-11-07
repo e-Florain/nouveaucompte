@@ -202,7 +202,7 @@ class CheckAdhMollieCommand extends Command
             ->setTo($to)
             ->setSubject('Florain - votre réadhésion')
             ->setFrom(['noreply@florain.fr' => 'Le Florain Numérique'])
-            ->setViewVars(array("datas" => $datas))
+            ->setViewVars($datas)
             ->viewBuilder()
             ->setTemplate('readhesionforadh')
             ->setLayout('default');
