@@ -39,7 +39,8 @@ class UsersController extends AppController
                 'index',
                 'importCi',
                 'moncompte',
-                'add'
+                'add',
+                'edit'
             ),
             'admin' => array(
                 'index',
@@ -339,6 +340,7 @@ class UsersController extends AppController
         }
         $user = $this->Users->get($id);
         $this->set('list_roles', $this->list_roles);
+        $this->set('list_auth', $this->list_auth);
         $this->set(compact('user'));
         if ($this->request->is('post')) {
             $data = $this->request->getData();
@@ -423,10 +425,23 @@ class UsersController extends AppController
         $florapi = $this->fetchTable('Florapi');
         $customer = $mollie->get_customer($email);
 
+
+        $mandates = $mollie->get_mandates($customer[0]['id']);
+        $mandateusr = array();
+
         /* Prélèvement */
         $subscriptions = $mollie->get_subscriptions($email);
         foreach ($subscriptions as $subscription) {
             if ($subscription['status'] == 'active') {
+                foreach ($mandates as $mandate) {
+                    if ($mandate['status'] == 'valid') {
+                        if ($mandate['id'] == $subscription['mandateId']) {
+                            $mandateusr['iban'] = $mandate['details']['consumerAccount'];
+                            $mandateusr['signatureDate'] = $mandate['signatureDate'];
+                            $mandateusr['id'] = $mandate['id'];
+                        }
+                    }
+                }
                 if (preg_match('/Change/', $subscription['description'])) {
                     //echo "<tr>";
                     //echo "<td><a href='subscription.php?id=".$subscription['id']."'>".$subscription['description']."</a></td>";
@@ -481,15 +496,14 @@ class UsersController extends AppController
         $this->set('assoname', $assoname);
 
         /* Coordonnées bancaires */
-        $mandates = $mollie->get_mandates($customer[0]['id']);
-        $mandateusr = array();
-        foreach ($mandates as $mandate) {
+        
+        /*foreach ($mandates as $mandate) {
             if ($mandate['status'] == 'valid') {
                 $mandateusr['iban'] = $mandate['details']['consumerAccount'];
                 $mandateusr['signatureDate'] = $mandate['signatureDate'];
                 $mandateusr['id'] = $mandate['id'];
             }
-        }
+        }*/
         $this->set('mandateusr', $mandateusr);
     }
 
@@ -588,7 +602,7 @@ class UsersController extends AppController
         }
     }
 
-    public function mandate($mandateid)
+    /*public function mandate($mandateid)
     {
         $role = $this->whoami();
         $session = $this->request->getSession();
@@ -649,6 +663,81 @@ class UsersController extends AppController
                 }
                 foreach ($subs_to_create as $sub) {
                     $res2 = $mollie->create_subscription($sub['amount'], $customer[0]['id'], $mandate, $sub['description'], $sub['interval'], $sub['startDate']);
+                }
+                $this->Flash->success(__('L\'IBAN a été changé.'));
+                return $this->redirect(['action' => 'moncompte']);
+            } else {
+                if ($infos['detail'] == "The bank account is invalid") {
+                    $this->Flash->error(__('Le compte bancaire est invalide'));
+                }
+            }
+        }
+    }*/
+
+    public function mandate($mandateid)
+    {
+        $role = $this->whoami();
+        $session = $this->request->getSession();
+        $email = $session->read('User.email');
+        $role = $session->read('User.role');
+        $this->Authorization->skipAuthorization();
+        $this->viewBuilder()->setLayout($this->getLayout($role));
+        $mollie = $this->fetchTable('Mollie');
+        $florapi = $this->fetchTable('Florapi');
+        $customer = $mollie->get_customer($email);
+        $mandate = $mollie->get_mandate($customer[0]['id'], $mandateid);
+        //Debug($mandate);
+        if ($mandate['status'] == 404) {
+            return $this->redirect(['action' => 'moncompte']);
+        }
+        $this->set('iban', $mandate['details']['consumerAccount']);
+        $this->set('mandateid', $mandate['id']);
+        $this->set('startdate', $mandate['signatureDate']);
+        $mandateusr = array();
+        $mandates = $mollie->list_mandates($customer[0]['id'])['_embedded']['mandates'];
+        $subscriptions = $mollie->get_subscriptions($email);
+        
+        $subs_to_update = array();
+        $sub = array();
+        foreach ($subscriptions as $subscription) {
+            foreach ($mandates as $mandate) {
+                if ($mandate['status'] == 'valid') {
+                    if ($mandate['id'] == $subscription['mandateId']) {
+                        $mandateusr['iban'] = $mandate['details']['consumerAccount'];
+                        $mandateusr['signatureDate'] = $mandate['signatureDate'];
+                        $mandateusr['id'] = $mandate['id'];
+                    }
+                }
+            }
+            if ($subscription['status'] == 'active') {
+                if (preg_match('/Change/', $subscription['description'])) {
+                    $sub['id'] = $subscription['id'];
+                    $sub['customerId'] = $subscription['customerId'];
+                    //$sub['interval'] = $subscription['interval'];
+                    //$sub['startDate'] = $subscription['nextPaymentDate'];
+                    $subs_to_update[] = $sub;
+                }
+                if (preg_match('/Adhésion/', $subscription['description'])) {
+                    $sub['id'] = $subscription['id'];
+                    $sub['customerId'] = $subscription['customerId'];
+                    //$sub['interval'] = $subscription['interval'];
+                    //$sub['startDate'] = $subscription['nextPaymentDate'];
+                    $subs_to_update[] = $sub;
+                }
+            }
+        }
+        //Debug($mandateusr);
+        if ($this->request->is('post')) {
+            $data = $this->request->getData();
+            //Debug($data);
+            $infos = $mollie->create_mandate($customer[0]['id'], $data['iban'], $customer[0]['name'], $email);
+            if (isset($infos['id'])) {
+                $mandate = $infos['id'];
+                if (isset($mandateusr['id'])) {
+                    $res1 = $mollie->revoke_mandate($customer[0]['id'], $mandateusr['id']);
+                }
+                foreach ($subs_to_update as $sub) {
+                    $res2 = $mollie->update_subscription_mandate($sub['id'], $sub['customerId'], $mandate);
                 }
                 $this->Flash->success(__('L\'IBAN a été changé.'));
                 return $this->redirect(['action' => 'moncompte']);

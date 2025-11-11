@@ -377,6 +377,25 @@ class MollieTable extends Table
         return $infos;
     }
 
+    public function update_customer($customerId, $email, $name)
+    {
+        $http = new Client();
+        $url = $this->mollie['url'] . "/customers/".$customerId;
+        $datas = array(
+            "email" => $email,
+            "name" => $name
+        );
+        $json = json_encode($datas);
+        $response = $http->post($url, $json, [
+            'headers' => [
+                'Authorization' => 'Bearer ' . $this->mollie['key'],
+                'Content-Type' => 'application/json'
+            ]
+        ]);
+        $infos = $response->getJson();
+        return $infos;
+    }
+
     public function delete_customer($id)
     {
         $http = new Client();
@@ -607,7 +626,6 @@ class MollieTable extends Table
     {
         $http = new Client();
         $url = $this->mollie['url'] . "/customers/" . $customer . "/subscriptions/" . $subscription;
-        $found = false;
         $amount = array(
             "currency" => "EUR",
             "value" => $amountvalue
@@ -624,6 +642,22 @@ class MollieTable extends Table
         }
         $json = json_encode($datas);
         var_dump($datas);
+        $response = $http->post($url, $json, [
+            'headers' => [
+                'Authorization' => 'Bearer ' . $this->mollie['key'],
+                'Content-Type' => 'application/json'
+            ]
+        ]);
+        $infos = $response->getJson();
+        return $infos;
+    }
+
+    public function update_subscription_mandate($subscription, $customer, $mandate)
+    {
+        $http = new Client();
+        $url = $this->mollie['url'] . "/customers/" . $customer . "/subscriptions/" . $subscription;
+        $datas['mandateId'] = $mandate;
+        $json = json_encode($datas);
         $response = $http->post($url, $json, [
             'headers' => [
                 'Authorization' => 'Bearer ' . $this->mollie['key'],
@@ -674,8 +708,8 @@ class MollieTable extends Table
         $url = $this->mollie['url'] . "/customers/" . $customer . "/mandates/" . $mandate;
         $response = $http->delete($url, [], [
             'headers' => [
-                'Authorization' => 'Bearer ' . $this->mollie['key'],
-                'Content-Type' => 'application/json'
+                'Authorization' => 'Bearer ' . $this->mollie['key']
+                //'Content-Type' => 'application/json'
             ]
         ]);
         $infos = $response->getJson();
