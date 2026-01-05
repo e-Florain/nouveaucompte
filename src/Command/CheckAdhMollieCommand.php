@@ -83,8 +83,10 @@ class CheckAdhMollieCommand extends Command
         $adhs = $florapi->getAllAdh();
         foreach ($adhs as $adh) {
             if (isset($adh['membership_stop']) and ($adh['membership_stop'] != "none")) {
-                if (preg_match('(\d{2}\s+\w+\s+\d{4})', $adh['membership_stop'], $matches)) {
-                    $datemembershipstop = new Datetime($matches[0]);
+                //if (preg_match('(\d{2}\s+\w+\s+\d{4})', $adh['membership_stop'], $matches)) {
+                if (preg_match('(\d{4}-\d{2}-\d{2})', $adh['membership_stop'], $matches)) {
+                    $datemembershipstop = DateTime::createFromFormat('Y-m-d', $adh['membership_stop']);
+                    //$datemembershipstop = new Datetime($matches[0]);
                     if ($datemembershipstop<$today) {
                         if (array_key_exists($adh['email'], $resultsMollie['AdhMensuelle'])) {
                             $date_adh_dec_1_month = $datemembershipstop;
@@ -93,34 +95,25 @@ class CheckAdhMollieCommand extends Command
                             if ($datemollie > $date_adh_dec_1_month) {
                                 if (($adh['membership_state'] == 'old') or ($adh['membership_state'] == NULL)) {
                                     echo "Mensuelle : ";
-                                    echo $adh['lastname']." ";
-                                    echo $adh['firstname']." ";
+                                    echo $adh['name']." ";
+                                    //echo $adh['firstname']." ";
                                     echo $datemembershipstop->format('Y-m-d')." ";
                                     echo $datemollie->format('Y-m-d')."\n";
                                     $datas = array(
                                         'email' => $adh['email'],
-                                        'name' => $adh['lastname']." ".$adh['firstname'],
+                                        'name' => $adh['name'],//." ".$adh['firstname'],
                                         'amount' => strval($resultsMollie['AdhMensuelle'][$adh['email']]['amount'])
                                     );
                                     $florapi->postMembership($datas);
-                                    $datas['lastname'] = $adh['lastname'];
-                                    $datas['firstname'] = $adh['firstname'];
+                                    //$datas['lastname'] = $adh['lastname'];
+                                    //$datas['firstname'] = $adh['firstname'];
+                                    $datas['name'] = $adh['name'];
                                     $datas['street'] = $adh['street'];
                                     $datas['zip'] = $adh['zip'];
                                     $datas['city'] = $adh['city'];
                                     $datas['account_cyclos'] = $adh['account_cyclos'];
                                     if ($adh['orga_choice'] != null) {
-                                        foreach ($assos as $asso) {
-                                            if ($asso['id'] == $adh['orga_choice']) {
-                                                $assochosen = $asso['name'];
-                                                continue;
-                                            }
-                                        }
-                                    }
-                                    if (isset($assochosen)) {
-                                        $datas['orga_choice'] = $assochosen;
-                                    } else {
-                                        $datas['orga_choice'] = "Non choisie";
+                                        $datas['orga_choice'] = $adh['orga_choice'][1];
                                     }
                                     $results[] = $datas;
                                 }
@@ -135,36 +128,24 @@ class CheckAdhMollieCommand extends Command
                                     /* condition à virer */
                                     if ($adh['email'] != "eva.buchi@wanadoo.fr") {
                                         echo "Annuelle : ";
-                                        echo $adh['lastname']." ";
-                                        echo $adh['firstname']." ";
+                                        echo $adh['name']." ";
                                         echo $datemembershipstop->format('Y-m-d')." ";
                                         echo $datemollie->format('Y-m-d')."\n";
                                         $datas = array(
                                             'email' => $adh['email'],
-                                            'name' => $adh['lastname']." ".$adh['firstname'],
+                                            'name' => $adh['name'],
                                             'amount' => strval($resultsMollie['AdhAnnuelle'][$adh['email']]['amount'])
                                         );
                                         $florapi->postMembership($datas);
-                                        $datas['lastname'] = $adh['lastname'];
-                                        $datas['firstname'] = $adh['firstname'];
+                                        $datas['name'] = $adh['name'];
                                         $datas['street'] = $adh['street'];
                                         $datas['zip'] = $adh['zip'];
                                         $datas['city'] = $adh['city'];
                                         $datas['account_cyclos'] = $adh['account_cyclos'];
                                         if ($adh['orga_choice'] != null) {
-                                            foreach ($assos as $asso) {
-                                                if ($asso['id'] == $adh['orga_choice']) {
-                                                    $assochosen = $asso['name'];
-                                                    continue;
-                                                }
-                                            }
+                                            $datas['orga_choice'] = $adh['orga_choice'][1];
                                         }
-                                        if (isset($assochosen)) {
-                                            $datas['orga_choice'] = $assochosen;
-                                        } else {
-                                            $datas['orga_choice'] = "Non choisie";
-                                        }
-                                        $this->sendAdhEmailReAdhesions($datas['email'], $datas);
+                                        //$this->sendAdhEmailReAdhesions($datas['email'], $datas);
                                         /* To debug a enlever */
                                         $this->sendAdhEmailReAdhesions('groche@guigeek.org', $datas);
                                         $results[] = $datas;

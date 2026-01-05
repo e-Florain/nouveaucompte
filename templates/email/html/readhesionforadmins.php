@@ -1,7 +1,7 @@
 Salut<br>
 une ou plusieurs réadhésions ont été effectuées :<br>
 <?php foreach ($datas as $data) { ?>
-    <?php echo "Nom : ".$data['lastname']." ".$data['firstname']; ?><br>
+    <?php echo "Nom : ".$data['name']; ?><br>
     <?php echo "Email : ".$data['email']; ?><br>
     <?php echo "Montant de l'adhésion : ".$data['amount']." €"; ?><br>
     <?php echo "Adresse : ".$data['street']; ?><br>

@@ -159,7 +159,8 @@ class NouveaucompteController extends AppController
             $this->set('assochosen', 'Aucune');
         }
         if ($adh[0]['membership_stop'] != null) {
-            $expirdate = DateTime::createFromFormat('D, d M Y H:i:s T', $adh[0]['membership_stop']);
+            
+            $expirdate = DateTime::createFromFormat('Y-m-d', $adh[0]['membership_stop']);
             $adh[0]['membership_stop'] = $expirdate->format("d m Y");
         }
         $this->set('adh', $adh[0]);

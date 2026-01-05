@@ -92,11 +92,13 @@ class OdooController extends AppController
         if (isset($parameters['?']['orderby'])) {
             array_multisort(array_column($adhs, $parameters['?']['orderby']), SORT_ASC, $adhs); 
         } else {
-            array_multisort(array_column($adhs, 'lastname'), SORT_ASC, $adhs); 
+            array_multisort(array_column($adhs, 'name'), SORT_ASC, $adhs); 
         }
         foreach ($adhs as $adh) {
-            if ($adh['membership_stop'] != null) {
-                $expirdate = DateTime::createFromFormat('D, d M Y H:i:s T', $adh['membership_stop']);
+            if ($adh['membership_stop'] != false) {
+                //Debug($adh['membership_stop']);
+                $expirdate = DateTime::createFromFormat('Y-m-d', $adh['membership_stop']);
+                //$expirdate = DateTime::createFromFormat('D, d M Y H:i:s T', $adh['membership_stop']);
                 $adh['membership_stop'] = $expirdate->format("d m Y");
                 $listadhs[] = $adh;
             }

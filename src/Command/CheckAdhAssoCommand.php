@@ -35,7 +35,7 @@ class CheckAdhAssoCommand extends Command
                 $contact = trim($adh['email']);
                 if ($adh['account_cyclos']) {
                     echo "Avec compte cyclos\n";
-                    echo $adh['lastname']." ".$adh['firstname']." ".$contact." ".$adh['orga_choice']."\n";
+                    echo $adh['name']." ".$contact." ".$adh['orga_choice']."\n";
                     //$this->sendEmailCompteCyclos($contact, $datas);
                 } else {
                     echo "Sans compte cyclos\n";
