@@ -485,13 +485,20 @@ class UsersController extends AppController
 
         /* Association soutenue */
         $adhs = $florapi->getAdh($email);
+        //Debug($adhs);
         $adh = $adhs[0];
         $assos = $florapi->getOdooAssos();
         //var_dump($assos);
-        foreach ($assos as $asso) {
-            if ($asso['id'] == $adh['orga_choice']) {
-                $assoname = $asso['name'];
+        //Debug($adh['orga_choice']);
+        /*if ($adh['orga_choice'] != null) {
+            foreach ($assos as $asso) {
+                if ($asso['id'] == $adh['orga_choice']) {
+                    $assoname = $asso['name'];
+                }
             }
+        }*/
+        if ($adh['orga_choice'] != false) {
+            $assoname = $adh['orga_choice'][1];
         }
         $this->set('assoname', $assoname);
 
@@ -518,7 +525,7 @@ class UsersController extends AppController
         if ($this->request->is('post')) {
             $data = $this->request->getData();
             $datas['email'] = $email;
-            $datas['infos']['orga_choice'] = $data['orgachoice'];
+            $datas['infos']['orga_choice'] = intval($data['orgachoice']);
             $florapi->updateAdh($datas);
             $this->Flash->success(__('L\'association soutenue a été changée.'));
             return $this->redirect(['action' => 'moncompte']);
