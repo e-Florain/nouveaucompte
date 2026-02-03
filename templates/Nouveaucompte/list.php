@@ -8,7 +8,6 @@
         <th>Date</th>
         <th>Ref</th>
         <th>Nom</th>
-        <th>Prénom</th>
         <th>Email</th>
         <th>Cyclos</th>
         <th>A valider</th>
@@ -32,10 +31,7 @@
             <?= $nvocompte->ref ?>
         </td>
         <td>
-            <?= $nvocompte->lastname ?>
-        </td>
-        <td>
-            <?= $nvocompte->firstname ?>
+            <?= $nvocompte->name ?>
         </td>
         <td>
             <?= $nvocompte->email ?>
