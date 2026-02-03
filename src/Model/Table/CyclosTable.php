@@ -110,6 +110,24 @@ class CyclosTable extends Table
         return $infos;
     }
 
+    public function getUser($user)
+    {
+        $http = new Client();
+        /*$headers = array(
+            'Content-Type: application/json',
+            'Authorization: Basic '. base64_encode($this->cyclos['admin'].':'.$this->cyclos['password'])
+        );*/
+        $headers = array(
+            'Content-Type' => 'application/json',
+            'Authorization' => 'Basic '.base64_encode($this->cyclos['admin'].':'.$this->cyclos['password'])
+        );
+        $url = $this->cyclos['url']."/users/".$user;
+        $response = $http->get($url, [], [
+            'headers' => $headers
+        ]);
+        $infos = $response->getJson();
+        return $infos;
+    }
    /* public function setPaymentPro1toPro2($prosrcid, $prodstid, $amount, $description)
     {
         $ch = curl_init();

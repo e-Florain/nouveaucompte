@@ -179,8 +179,9 @@ class NextcloudTable extends Table
                 $cmd = 'pdftk "'.$imageURL.'" stamp '.WWW_ROOT.'img/stamp.pdf output "'.$targetpath.'"';
                 //Debug($cmd);
                 //echo $cmd."\n";
-                shell_exec($cmd);
-                unlink($imageURL);
+                $res = shell_exec($cmd);
+                //Debug($res);
+                //unlink($imageURL);
                 break;            
             default:
                 if (($path_parts['extension'] == "jpg") or ($path_parts['extension'] == "jpeg")) {
