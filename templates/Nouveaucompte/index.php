@@ -26,7 +26,7 @@
     <div class="col-md-8 offset-md-1">
         <div class="ul-fl">
             <li><h5>Être un particulier (Pour les professionnels, nous contacter : <a
-                    href="https://www.monnaielocalenancy.fr/nous-rejoindre/professionnels/" target="_blank">
+                    href="https://www.florain.fr/nous-rejoindre/professionnels/" target="_blank">
                     http://www.florain.fr/nous-rejoindre/professionnels/ </a></h5></li>
             <li><h5>Être majeur</h5></li>
             <li><h5>Mettre en place une <b>adhésion</b> annuelle par prélèvement automatique (Si vous êtes déjà adhérent,
