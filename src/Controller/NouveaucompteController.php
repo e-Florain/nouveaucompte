@@ -13,8 +13,9 @@ class NouveaucompteController extends AppController
 
     private $nbsteps = 9;
     private $translates = array(
-        'firstname' => 'Prénom',
-        'lastname' => 'Nom',
+        //'firstname' => 'Prénom',
+        //'lastname' => 'Nom',
+        'name' => 'Nom',
         'email' => 'Email',
         'street' => 'Adresse',
         'zip' => 'Code postal',
@@ -144,12 +145,13 @@ class NouveaucompteController extends AppController
         $adh = $florapi->getAdh($nvocompte->email);
         $assos = $florapi->getOdooAssos();
         if ($adh[0]['orga_choice'] != null) {
-            foreach ($assos as $asso) {
+            $assochosen = $adh[0]['orga_choice'][1];
+            /*foreach ($assos as $asso) {
                 if ($asso['id'] == $adh[0]['orga_choice']) {
                     $assochosen = $asso['name'];
                     continue;
                 }
-            }
+            }*/
             if (isset($assochosen)) {
                 $this->set('assochosen', $assochosen);
             } else {
@@ -169,20 +171,13 @@ class NouveaucompteController extends AppController
         $data = array();
         $data['todo'] = 'update';
         foreach ($adh[0] as $key => $value) {
-            if ($key == "lastname") {
-                $lastname = str_replace($this->search, $this->replace, $value);
-                //$sess->write("last_name",trim(strtoupper($lastname)));
-                $data['lastname'] = trim(strtoupper($lastname));
-            } elseif ($key == "firstname") {
-                $firstname = str_replace($this->search, $this->replace, $value);
-                //$sess->write("first_name", trim(ucfirst($firstname)));
-                $data['firstname'] = trim(ucfirst($firstname));
-            } elseif (array_key_exists($key, $datakeys)) {
+           if (array_key_exists($key, $datakeys)) {
                 if ($key != "id") {
                     $data[$key] = $value;
                 }
             }
         }
+        //$data['name'] = $data['firstname']." ".$data['lastname'];
         if ($data['membership_stop'] != null) {
             $data['membership_stop'] = $expirdate->format("Y-m-d H:i:s");
         }
@@ -247,8 +242,9 @@ class NouveaucompteController extends AppController
                         $uuid = bin2hex(random_bytes(40));
                         $datas = array(
                             'uuid' => $uuid,
-                            'lastname' => $adh[0]['lastname'],
-                            'firstname' => $adh[0]['firstname'],
+                            'name' => $adh[0]['name'],
+                            //'lastname' => $adh[0]['lastname'],
+                            //'firstname' => $adh[0]['firstname'],
                             'email' => $data['email'],
                             'account_cyclos' => $account_cyclos
                         );
@@ -277,8 +273,8 @@ class NouveaucompteController extends AppController
                         $uuid = bin2hex(random_bytes(40));
                         $datas = array(
                             'uuid' => $uuid,
-                            'lastname' => $adh[0]['lastname'],
-                            'firstname' => $adh[0]['firstname'],
+                            'name' => $adh[0]['name'],
+                            //'firstname' => $adh[0]['firstname'],
                             'email' => $email,
                             'account_cyclos' => $account_cyclos
                         );
@@ -391,12 +387,12 @@ class NouveaucompteController extends AppController
                     return $this->redirect('/nouveaucompte/confirmationemail/' . urlencode($adh[0]['email']));
                 }
                 $data['todo'] = 'create';
-                //Debug($data);
+                $data['name'] = $data['firstname']." ".$data['lastname'];
                 $this->update($uuid, $data);
                 //session->write('todo', 'create');
             }
             $nvocompte = $this->Nouveaucompte->findByUuid($uuid)->firstOrFail();
-            $dirname = str_replace(' ', '', date("Ymd_H:i:s") . '_' . $nvocompte->lastname . '-' . $nvocompte->firstname);
+            $dirname = str_replace(' ', '', date("Ymd_H:i:s") . '_' . $nvocompte->name);// . '-' . $nvocompte->firstname);
             $session->write('dirname', $dirname);
             $nextcloud = $this->fetchTable('Nextcloud');
             if (!$nextcloud->isFolderExist($dirname)) {
@@ -477,7 +473,7 @@ class NouveaucompteController extends AppController
         $this->set('nbsteps', $session->read('nbsteps'));
         if ($this->request->is('post')) {
             if ($session->read('dirname') == NULL) {
-                $dirname = str_replace(' ', '', date("Ymd_H:i:s") . '_' . $nvocompte->lastname . '-' . $nvocompte->firstname);
+                $dirname = str_replace(' ', '', date("Ymd_H:i:s") . '_' . $nvocompte->name);// . '-' . $nvocompte->firstname);
                 $session->write('dirname', $dirname);
 
             } else {
@@ -492,7 +488,7 @@ class NouveaucompteController extends AppController
             //Debug($this->request->getData());
             $nvocompte = $this->Nouveaucompte->findByUuid($uuid)->firstOrFail();
             $this->log("dirname : " . $dirname . " tmp_name : " . $_FILES['uploadedFile']['tmp_name'] . " name : " . $_FILES['uploadedFile']['name'], 'debug');
-            $res = $mindee->checkIdentity($_FILES['uploadedFile']['tmp_name'], $nvocompte->lastname, $nvocompte->firstname);
+            //$res = $mindee->checkIdentity($_FILES['uploadedFile']['tmp_name'], $nvocompte->lastname, $nvocompte->firstname);
             /* FORCE VALIDATE CI */
             $res['result'] = 'OK';
             $res['birth_date'] = '1980-01-01';
@@ -568,8 +564,8 @@ class NouveaucompteController extends AppController
             $step = 3;
         }
         $nvocompte = $this->Nouveaucompte->findByUuid($uuid)->firstOrFail();
-        if ($nvocompte->lastname == NULL) {
-            $this->log('try to access to adh without lastname', 'error');
+        if ($nvocompte->name == NULL) {
+            $this->log('try to access to adh without name', 'error');
             return $this->redirect('/nouveaucompte/index');
         }
         if ($nvocompte->street == NULL) {
@@ -643,8 +639,8 @@ class NouveaucompteController extends AppController
         } else {
             $step = 4;
         }
-        if ($nvocompte->lastname == NULL) {
-            $this->log('try to access to adh without lastname', 'error');
+        if ($nvocompte->name == NULL) {
+            $this->log('try to access to adh without name', 'error');
             return $this->redirect('/nouveaucompte/index');
         }
         if ($nvocompte->street == NULL) {
@@ -726,8 +722,8 @@ class NouveaucompteController extends AppController
             $titre = "(SANS COMPTE NUMERIQUE)";
         }
         $this->set('titre', $titre);
-        if ($nvocompte->lastname == NULL) {
-            $this->log('try to access to editiban without lastname', 'error');
+        if ($nvocompte->name == NULL) {
+            $this->log('try to access to editiban without name', 'error');
             return $this->redirect('/nouveaucompte/index');
         }
         $this->log('editiban '.$uuid, 'debug');
@@ -777,8 +773,8 @@ class NouveaucompteController extends AppController
         }
         $this->set('titre', $titre);
         $this->set('comptecyclos', $nvocompte->account_cyclos);
-        if ($nvocompte->lastname == NULL) {
-            $this->log('try to access to chooseasso without lastname', 'error');
+        if ($nvocompte->name == NULL) {
+            $this->log('try to access to chooseasso without name', 'error');
             return $this->redirect('/nouveaucompte/index');
         }
         if ($nvocompte->iban == NULL) {
@@ -831,8 +827,8 @@ class NouveaucompteController extends AppController
         $this->set('assoname', $assoname);
         $this->set('results', $results);
         $this->set('nvocompte', $nvocompte);
-        if ($nvocompte->lastname == NULL) {
-            $this->log('try to access to fin without lastname', 'error');
+        if ($nvocompte->name == NULL) {
+            $this->log('try to access to fin without name', 'error');
             return $this->redirect('/nouveaucompte/index');
         }
         if ($nvocompte->orga_choice == NULL) {
@@ -869,25 +865,18 @@ class NouveaucompteController extends AppController
         $results['translates'] = $this->translates;
         $results['email'] = $nvocompte->email;
         $infos = array(
-            'firstname' => $nvocompte->firstname,
-            'lastname' => $nvocompte->lastname,
+            'name' => $nvocompte->name,
             'street' => $nvocompte->street,
             'city' => $nvocompte->city,
             'zip' => $nvocompte->postcode,
             'phone' => $nvocompte->phone,
-            'orga_choice' => $nvocompte->orga_choice
+            'orga_choice' => $nvocompte->orga_choice,
+            'accept_newsletter' => $nvocompte->accept_newsletter,
+            'account_cyclos' => $nvocompte->account_cyclos
         );
-        if ($nvocompte->accept_newsletter) {
-            $infos['accept_newsletter'] = 't';
-        } else {
-            $infos['accept_newsletter'] = 'f';
-        }
-        
         if ($nvocompte->account_cyclos) {
-            $infos['account_cyclos'] = 't';
             $infos['changeeuros'] = $nvocompte->nbflorains;
         } else {
-            $infos['account_cyclos'] = 'f';
             $infos['changeeuros'] = '0';
         }
         $results['infos'] = $infos;
@@ -921,17 +910,17 @@ class NouveaucompteController extends AppController
         $florapi->updateAdh($datas);
     }
 
-    public function create_mollie_user($lastname, $firstname, $email)
+    public function create_mollie_user($name, $email)
     {
-        $this->log('create_mollie_user '.$firstname, 'debug');
+        $this->log('create_mollie_user '.$name, 'debug');
         $mollie = $this->fetchTable('Mollie');
-        $name_whitoutspace = $lastname.$firstname;
+        //$name_whitoutspace = $lastname.$firstname;
         $results = $mollie->get_customer($email);
         if (count($results) > 0) {
             $this->log('mollie user already exists', 'error');
             return $results[0]['id'];
         }
-        $infoscustomer = $mollie->create_customer($email, $name_whitoutspace);
+        $infoscustomer = $mollie->create_customer($email, $name);
         return $infoscustomer['id'];
     }
 
@@ -939,7 +928,7 @@ class NouveaucompteController extends AppController
     {
         $this->log('create_mandate '.$customerid, 'debug');
         $mollie = $this->fetchTable('Mollie');
-        $name = $nvocompte->lastname." ".$nvocompte->firstname;
+        $name = $nvocompte->name;
         $infosmandate = $mollie->create_mandate($customerid, $nvocompte->iban, $name, $nvocompte->email);
         if (is_numeric($infosmandate["status"])) {
             $strmsg = "ERROR Mollie".strval($infosmandate["status"]);
@@ -956,7 +945,7 @@ class NouveaucompteController extends AppController
         $mollie = $this->fetchTable('Mollie');
         $florapi = $this->fetchTable('Florapi');
         $results = array();
-        $name = $nvocompte->lastname." ".$nvocompte->firstname;
+        $name = $nvocompte->name;
         $boolstartdatenow = False;
         if ($nvocompte->startdate_debit != NULL) {
             $startdate_debit = new DateTime($nvocompte->startdate_debit);
@@ -1046,7 +1035,7 @@ class NouveaucompteController extends AppController
                 $this->create_odoo_adh($resultsodoo);
                     
                 // create Mollie user if necessary 
-                $customerid = $this->create_mollie_user($nvocompte->lastname, $nvocompte->firstname, $nvocompte->email);
+                $customerid = $this->create_mollie_user($nvocompte->name, $nvocompte->email);
 
                 // create Mollie mandate 
                 $infosmandate = $this->create_mandate($nvocompte, $customerid);
@@ -1118,7 +1107,7 @@ class NouveaucompteController extends AppController
             $this->update_odoo_adh($results);
                 
             // create Mollie user if necessary 
-            $customerid = $this->create_mollie_user($nvocompte->lastname, $nvocompte->firstname, $nvocompte->email);
+            $customerid = $this->create_mollie_user($nvocompte->name, $nvocompte->email);
 
             // create Mollie mandate 
             $infosmandate = $this->create_mandate($nvocompte, $customerid);
@@ -1180,7 +1169,7 @@ class NouveaucompteController extends AppController
             $this->update_odoo_adh($results);
                 
             // create Mollie user if necessary 
-            $customerid = $this->create_mollie_user($nvocompte->lastname, $nvocompte->firstname, $nvocompte->email);
+            $customerid = $this->create_mollie_user($nvocompte->name, $nvocompte->email);
 
             // create Mollie mandate 
             $infosmandate = $this->create_mandate($nvocompte, $customerid);
