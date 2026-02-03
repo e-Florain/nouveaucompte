@@ -21,14 +21,9 @@
         <th><?= $this->Html->link("Nom", [
             'controller' => 'odoo',
             'action' => 'adhpart',
-            '?' => ['orderby' => "lastname"]
+            '?' => ['orderby' => "name"]
         ]); ?>
         </th>
-        <th><?= $this->Html->link("Prénom", [
-            'controller' => 'odoo',
-            'action' => 'adhpart',
-            '?' => ['orderby' => "firstname"]
-        ]); ?>
         </th>
         <th><?= $this->Html->link("Email", [
             'controller' => 'odoo',
@@ -66,10 +61,7 @@
             <?= $adh['ref'] ?>
         </td>
         <td>
-            <?= $adh['lastname'] ?>
-        </td>
-        <td>
-            <?= $adh['firstname'] ?>
+            <?= $adh['name'] ?>
         </td>
         <td>
             <?= $adh['email'] ?>
