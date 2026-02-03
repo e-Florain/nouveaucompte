@@ -174,7 +174,7 @@
             <i> Les personnes souhaitant changer des euros en Florain (papier ou numérique) doivent adhérer à
                 l’association. Peut adhérer au Collectif, en tant qu’utilisateur, tout particulier et toute personne
                 morale sous réserve de respect des valeurs défendues par <a
-                    href="https://www.monnaielocalenancy.fr/wp-content/uploads/Charte-de-Valeurs.pdf" target="_blank">
+                    href="https://www.florain.fr/wp-content/uploads/Charte-de-Valeurs.pdf" target="_blank">
                     la charte de valeurs</a>.</i>
             <br /><br />
         </div>

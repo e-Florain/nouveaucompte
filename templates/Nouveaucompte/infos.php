@@ -40,7 +40,7 @@
             <?php if (!$comptecyclos) {
                 echo '<span>J\'ai lu et je valide la charte</b></span>';
             } else {
-                echo '<span>J\'ai lu et je valide les <b><a href="https://www.monnaielocalenancy.fr/wp-content/uploads/CGU-Utilisateur-Florain-Oct-2022.pdf" target="_blank">CGU Particuliers</a></b></span>';
+                echo '<span>J\'ai lu et je valide les <b><a href="https://www.florain.fr/wp-content/uploads/CGU-Utilisateur-Florain-Oct-2022.pdf" target="_blank">CGU Particuliers</a></b></span>';
             }
             ?>
         </label>
