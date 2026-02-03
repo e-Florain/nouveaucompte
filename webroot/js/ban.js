@@ -88,7 +88,7 @@ $("#address").keyup(function(event) {
   // On lance une minuterie pour une requête vers l'API.
   fetchTrigger = setTimeout(function() {
     // On lance la requête sur l'API
-    $.get('https://api-adresse.data.gouv.fr/search/', {
+    $.get('https://data.geopf.fr/geocodage/search/', {
       q: rue,
       limit: 15,
       autocomplete: 1
