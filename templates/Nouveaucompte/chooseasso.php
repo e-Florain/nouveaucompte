@@ -15,10 +15,7 @@
 
 <div class="row">
     <div class="col s12 m6 offset-m2 change">
-        Quand une personne adhère au Florain, elle choisit une association locale, membre du Florain, qu’elle souhaite
-        soutenir. Ainsi, à chaque change d’euros en florains, un don équivalent à 1% de la somme changée sera versé à
-        l'association retenue. Par exemple, en changeant 300 euros tout au long de l'année, je recevrai 300 florains, et
-        l'association que j'ai choisie recevra 3 florains en fin d'année !
+        En adhérant au Florain, une personne soutient une association locale de son choix en versant 1 % de chaque montant échangé en florains à celle-ci. Par exemple, pour 100 euros échangés, l'association reçoit 1 florain à la fin de l'année.
     </div>
 </div>
 <br>
