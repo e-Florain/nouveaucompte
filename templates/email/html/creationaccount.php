@@ -1,12 +1,10 @@
 Bonjour
-<?= $firstname . " " . $lastname; ?>,
+<?= $name; ?>,
 <br /> Vous avez demandé l'ouverture d'un compte Florain
-<?php if ($account_cyclos == 't') { ?> numérique
+<?php if ($account_cyclos) { ?> numérique
 <?php } ?>, avec les informations suivantes :<br>
 Nom :
-<?php echo $lastname; ?><br>
-Prénom :
-<?php echo $firstname; ?><br>
+<?php echo $name; ?><br>
 Adresse :
 <?php echo $street; ?><br>
 Code postal : :
@@ -21,10 +19,10 @@ Tel :
 <?php if (isset($nbeurosadhmensuel)) { ?> Adhésion mensuelle :
     <?php echo $nbeurosadhmensuel . " €<br>";
 } ?>
-<?php if (isset($changeeuros)) { ?> Change mensuel :
-    <?php echo $changeeuros . " €";
+<?php if ($account_cyclos) { ?> Change mensuel :
+    <?php echo $changeeuros . " €<br>";
 } ?>
-<br>
+
 Nom de l'association choisie :
 <?php echo $assoname; ?><br>
 
@@ -32,14 +30,14 @@ Nom de l'association choisie :
 <br /> En cliquant sur ce lien (valable 15 minutes) pour finaliser la procédure de création de compte, vous certifiez
 que vous souhaitez :
 <ul>
-    <?php if (isset($comptecyclos)) { ?>
+    <?php if ($account_cyclos) { ?>
         <li> Créer un compte numérique Florain </li>
     <?php } else { ?>
         <li> Créer un compte Florain </li>
     <?php } ?>
 
     <li> Mettre en place une adhésion automatique </li>
-    <?php if (isset($comptecyclos)) { ?>
+    <?php if ($account_cyclos) { ?>
         <li> Mettre en place un change mensuel automatique </li>
     <?php } ?>
     <li>Signer un mandat de prélèvement SEPA qui autorise l'association Le Florain à prélever votre compte.</li>

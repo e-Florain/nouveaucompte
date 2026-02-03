@@ -1,7 +1,6 @@
 Bonjour,
 une nouvelle <?php if ($todo=="create") {echo "adhésion";} if ($todo=="update") {echo "re-adhésion";}  if ($account_cyclos == "t") { ?> avec un compte numérique <?php } ?> a été enregistrée :<br>
-Nom : <?php echo $lastname; ?><br>
-Prénom : <?php echo $firstname; ?><br>
+Nom : <?php echo $name; ?><br>
 Mail : <?php echo $email; ?><br>
 Adresse : <?php echo $street; ?><br>
 Code postal : <?php echo $zip; ?><br>

@@ -13,20 +13,22 @@
         <?php
         foreach($results['infos'] as $key => $info) {
             echo "<div class='row'>";
+            if ($key == "changeeuros") {
+                if (!$results['infos']['account_cyclos']) {
+                    continue;
+                }
+            }
+            
             if($key != "account_cyclos") {
                 echo "<div class='col-sm-4'><b>".$results['translates'][$key]."</b></div>";
                 if($key == 'orga_choice') {
-                    /*foreach($assos as $asso) {
-                        if($asso['id'] == $nvocompte->$key) {*/
                     echo "<div class='col-sm-4'>".$assoname."</div>";
-                    /*    }
-                    }*/
                 } elseif ($key == 'email') {
                     echo "<div class='col-sm-4'>".$results[$key]."</div>";
                 } else {
-                    if ($info == 't') {
+                    if (is_bool($info) and $info) {
                         echo "<div class='col-sm-4'>Oui</div>";
-                    } elseif ($info == 'f') {
+                    } elseif (is_bool($info) and !$info) {
                         echo "<div class='col-sm-4'>Non</div>";
                     } else {
                         echo "<div class='col-sm-4'>".$results['infos'][$key]."</div>";
@@ -39,7 +41,7 @@
         ?>
     </div>
 </div>
-
+<br>
 <br>
 <div class="row">
     <div class="col offset-s2">

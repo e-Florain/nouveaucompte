@@ -1,4 +1,4 @@
-Bonjour <?= $firstname." ".$lastname; ?>,
+Bonjour <?= $name; ?>,
 <br /> Vous avez demandé l'ouverture d'un compte Florain, et vous êtes déjà adhérent à
 l'association
 <br /> Veuillez cliquer sur le lien ci-dessous pour vérifier vos informations et
