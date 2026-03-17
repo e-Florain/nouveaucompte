@@ -38,7 +38,7 @@
         <label>
             <input type="checkbox" required />
             <?php if (!$comptecyclos) {
-                echo '<span>J\'ai lu et je valide la charte</b></span>';
+                echo '<span>J\'ai lu et je valide la <b><a href="https://www.florain.fr/wp-content/uploads/Charte-de-Valeurs.pdf" target="_blank">charte</a></b></span>';
             } else {
                 echo '<span>J\'ai lu et je valide les <b><a href="https://www.florain.fr/wp-content/uploads/CGU-Utilisateur-Florain-Oct-2022.pdf" target="_blank">CGU Particuliers</a></b></span>';
             }
