@@ -128,10 +128,12 @@ class CheckPaymentCommand extends Command
 
     public function sendEmailProFuturPayment($to, $subject, $datas)
     {
+        $bcc = array('groche@guigeek.org', 'virginie@florain.fr');
         $mailer = new Mailer();
         $mailer
             ->setEmailFormat('both')
             ->setTo($to)
+            ->setBcc($bcc)
             ->setSubject('Paiement Florain - '.$subject)
             ->setFrom(['noreply@florain.fr' => 'Le Florain Numérique'])
             ->setViewVars($datas)

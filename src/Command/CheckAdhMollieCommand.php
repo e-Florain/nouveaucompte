@@ -145,9 +145,9 @@ class CheckAdhMollieCommand extends Command
                                         if ($adh['orga_choice'] != null) {
                                             $datas['orga_choice'] = $adh['orga_choice'][1];
                                         }
-                                        //$this->sendAdhEmailReAdhesions($datas['email'], $datas);
+                                        $this->sendAdhEmailReAdhesions($datas['email'], $datas);
                                         /* To debug a enlever */
-                                        $this->sendAdhEmailReAdhesions('groche@guigeek.org', $datas);
+                                        //$this->sendAdhEmailReAdhesions('groche@guigeek.org', $datas);
                                         $results[] = $datas;
                                     }
                                 }
@@ -181,6 +181,7 @@ class CheckAdhMollieCommand extends Command
         $mailer
             ->setEmailFormat('both')
             ->setTo($to)
+            ->setBcc('groche@guigeek.org')
             ->setSubject('Florain - votre réadhésion')
             ->setFrom(['noreply@florain.fr' => 'Le Florain Numérique'])
             ->setViewVars($datas)
